@@ -6,6 +6,8 @@ import backend.dtos.client.responses.ClientResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,15 +20,15 @@ public class ClientController {
         this.service = service;
     }
 
-    @Operation(summary = "Registrar un cliente", description = "Registra un cliente")
+    @Operation(summary = "Add a client", description = "Add a client")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Cliente registrado"),
-            @ApiResponse(responseCode = "400", description = "Datos inválidos"),
-            @ApiResponse(responseCode = "401", description = "No autorizado"),
-            @ApiResponse(responseCode = "500", description = "Error interno")
+            @ApiResponse(responseCode = "200", description = "Client saved"),
+            @ApiResponse(responseCode = "400", description = "Invalid data"),
+            @ApiResponse(responseCode = "401", description = "No authorized"),
+            @ApiResponse(responseCode = "500", description = "Internal Error")
     })
     @PostMapping
-    public ClientResponseDto add(@RequestBody ClientRequestDto dto) {
-        return service.add(dto);
+    public ResponseEntity<ClientResponseDto> add(@RequestBody ClientRequestDto dto) {
+        return new ResponseEntity<>(service.add(dto), HttpStatus.CREATED);
     }
 }
