@@ -21,6 +21,7 @@
     <module>client-service</module>
     <module>commons</module>
     <module>gateway-server</module>
+    <module>auth-service</module>
   </modules>
 
   <properties>
