@@ -27,7 +27,7 @@
     <properties>
         <java.version>17</java.version>
         <spring-cloud.version>2024.0.2</spring-cloud.version>
-        <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
+        <org.mapstruct.version>1.6.3</org.mapstruct.version>
         <maven.test.skip>true</maven.test.skip>
     </properties>
     <dependencies>
