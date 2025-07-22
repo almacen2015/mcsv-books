@@ -1,7 +1,7 @@
 package backend.utils;
 
 import backend.dtos.client.requests.ClientRequestDto;
-import backend.dtos.exceptions.client.ClientException;
+import backend.exceptions.client.ClientException;
 
 public class Utils {
 

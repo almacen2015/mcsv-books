@@ -1,4 +1,4 @@
-package backend.dtos.exceptions.client;
+package backend.exceptions.client;
 
 public class ClientException extends RuntimeException {
     public static final String ERROR_NAME = "The name is required";
