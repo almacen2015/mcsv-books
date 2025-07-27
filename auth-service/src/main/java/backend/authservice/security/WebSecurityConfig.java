@@ -38,8 +38,8 @@ public class WebSecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .httpBasic(withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(http -> http.requestMatchers(HttpMethod.POST, "/api/auth/log-in").permitAll())
-                .authorizeHttpRequests(http -> http.requestMatchers(HttpMethod.POST, "/api/auth/registrar").permitAll())
+                .authorizeHttpRequests(http -> http.requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll())
+                .authorizeHttpRequests(http -> http.requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/swagger-ui.html",

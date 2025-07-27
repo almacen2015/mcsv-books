@@ -38,10 +38,11 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
         final String HEADER_AUTHORITIES = "Authorities";
         final String HEADER_ROLES = "roles";
         final String HEADER_USER = "user";
+        final String PATH_LOGIN =  "/login";
 
         ServerHttpRequest request = exchange.getRequest();
 
-        if (request.getURI().getPath().equals("/login")) {
+        if (request.getURI().getPath().contains(PATH_LOGIN)) {
             return chain.filter(exchange);
         }
 
