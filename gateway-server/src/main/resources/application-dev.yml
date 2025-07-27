@@ -3,7 +3,7 @@ spring:
     gateway:
       routes:
         - id: clients-service
-          uri: lb://clients-service
+          uri: lb://client-service
           predicates:
             - Path=/api/clients/**
 

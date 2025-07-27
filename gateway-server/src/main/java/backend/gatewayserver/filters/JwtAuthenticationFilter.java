@@ -35,7 +35,7 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
         final String INVALID_TOKEN_MESSAGE = "Invalid token";
         final String HEADER_BEARER = "Bearer";
         final String HEADER_BEARER_WITH_SPACE = "Bearer ";
-        final String HEADER_AUTHORITIES = "Authorities";
+        final String HEADER_AUTHORITIES = "authorities";
         final String HEADER_ROLES = "roles";
         final String HEADER_USER = "user";
         final String PATH_LOGIN =  "/login";
