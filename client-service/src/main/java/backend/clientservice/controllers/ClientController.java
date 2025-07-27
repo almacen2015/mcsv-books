@@ -1,6 +1,6 @@
 package backend.clientservice.controllers;
 
-import backend.clientservice.services.impl.ClientService;
+import backend.clientservice.services.ClientService;
 import backend.dtos.client.requests.ClientRequestDto;
 import backend.dtos.client.responses.ClientResponseDto;
 import io.swagger.v3.oas.annotations.Operation;

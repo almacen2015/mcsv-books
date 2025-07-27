@@ -1,7 +1,7 @@
-package backend.clientservice.services;
+package backend.clientservice.services.impl;
 
 import backend.clientservice.repositories.ClientRepository;
-import backend.clientservice.services.impl.ClientService;
+import backend.clientservice.services.ClientService;
 import backend.dtos.client.requests.ClientRequestDto;
 import backend.dtos.client.responses.ClientResponseDto;
 import backend.utils.Utils;

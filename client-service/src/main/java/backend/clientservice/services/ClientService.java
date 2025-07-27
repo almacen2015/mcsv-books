@@ -1,4 +1,4 @@
-package backend.clientservice.services.impl;
+package backend.clientservice.services;
 
 import backend.dtos.client.requests.ClientRequestDto;
 import backend.dtos.client.responses.ClientResponseDto;
