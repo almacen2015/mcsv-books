@@ -2,6 +2,7 @@ package backend.clientservice.services.impl;
 
 import backend.clientservice.repositories.ClientRepository;
 import backend.clientservice.services.ClientService;
+import backend.dtos.apiresponse.ApiResponseDto;
 import backend.dtos.client.requests.ClientRequestDto;
 import backend.dtos.client.responses.ClientResponseDto;
 import backend.utils.Utils;
@@ -22,8 +23,8 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     @Transactional(rollbackOn = Exception.class)
-    public ClientResponseDto add(ClientRequestDto dto) {
-        logger.info("Datos de cliente: {}", dto.toString());
+    public ApiResponseDto<ClientResponseDto> add(ClientRequestDto dto, String traceId) {
+        logger.info("[{}] Data client: {}", traceId, dto.toString());
         Utils.validateClientDto(dto);
         return null;
     }
