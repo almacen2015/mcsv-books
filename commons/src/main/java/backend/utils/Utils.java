@@ -27,6 +27,12 @@ public class Utils {
         }
     }
 
+    public static int getAge(LocalDate birthDate) {
+        LocalDate now = LocalDate.now();
+        Period period = Period.between(birthDate, now);
+        return period.getYears();
+    }
+
     public static boolean isAdult(LocalDate birthDate) {
         LocalDate now = LocalDate.now();
         return Period.between(now, birthDate).getYears() > 18;
