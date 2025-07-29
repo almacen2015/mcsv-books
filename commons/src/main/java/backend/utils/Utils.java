@@ -1,6 +1,7 @@
 package backend.utils;
 
 import backend.dtos.client.requests.ClientRequestDto;
+import backend.enums.Gender;
 import backend.exceptions.client.ClientException;
 
 import java.time.LocalDate;
@@ -18,13 +19,18 @@ public class Utils {
             throw new ClientException(ClientException.ERROR_LASTNAME);
         }
 
-        if (isStringValid(dto.gender()) || dto.gender().length() != 1) {
+        if (isStringValid(dto.gender()) || dto.gender().length() != 1
+                || !isValidGender(dto.gender())) {
             throw new ClientException(ClientException.ERROR_GENDER);
         }
 
-        if (isAdult(dto.birthDate())) {
+        if (dto.birthDate() == null || isAdult(dto.birthDate())) {
             throw new ClientException(ClientException.ERROR_BIRTHDATE);
         }
+    }
+
+    public static boolean isValidGender(String gender) {
+        return gender.equals(Gender.M.name()) || gender.equals(Gender.F.name());
     }
 
     public static int getAge(LocalDate birthDate) {
