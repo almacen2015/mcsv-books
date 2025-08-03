@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -32,6 +33,24 @@ class ClientRepositoryTest {
     @BeforeEach
     void setUp() {
         repository.deleteAll();
+    }
+
+    @Test
+    void testList() {
+        Client client1 = new Client(null, "Victor", "Orbegozo", LocalDate.of(1994, 4, 5), 30, 'M');
+        Client client2 = new Client(null, "Luis", "Mesa", LocalDate.of(1994, 4, 5), 30, 'M');
+        Client client3 = new Client(null, "Mario", "Mario", LocalDate.of(1994, 4, 5), 30, 'M');
+
+        List<Client> clients = repository.saveAll(List.of(client1, client2, client3));
+
+        assertNotNull(clients);
+        assertEquals(3, clients.size());
+        assertEquals(1L, clients.get(0).getId());
+        assertEquals(2L, clients.get(1).getId());
+        assertEquals(3L, clients.get(2).getId());
+        assertEquals("Victor", clients.get(0).getName());
+        assertEquals("Luis", clients.get(1).getName());
+        assertEquals("Mario", clients.get(2).getName());
     }
 
     @Test
