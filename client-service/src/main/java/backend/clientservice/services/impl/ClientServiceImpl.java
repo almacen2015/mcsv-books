@@ -7,12 +7,19 @@ import backend.clientservice.services.ClientService;
 import backend.dtos.apiresponse.ApiResponseDto;
 import backend.dtos.client.requests.ClientRequestDto;
 import backend.dtos.client.responses.ClientResponseDto;
+import backend.dtos.pageable.PageableCustom;
+import backend.utils.Message;
 import backend.utils.Utils;
 import jakarta.transaction.Transactional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ClientServiceImpl implements ClientService {
@@ -23,6 +30,24 @@ public class ClientServiceImpl implements ClientService {
 
     public ClientServiceImpl(ClientRepository repository) {
         this.repository = repository;
+    }
+
+    @Override
+    public ApiResponseDto<Page<ClientResponseDto>> list(Integer page, Integer size, String orderBy, String traceId) {
+        logger.info("[{}] Data pageable page {}, size {}, orderBy {}", traceId, page, size, orderBy);
+
+        PageableCustom pageableCustom = new PageableCustom(page, size, orderBy);
+        Utils.validatePagination(pageableCustom);
+        Pageable pageable = Utils.constructPageable(pageableCustom);
+
+        Page<Client> clients = repository.findAll(pageable);
+
+        List<ClientResponseDto> data = clients.getContent().stream()
+                .map(mapper::toDto).toList();
+
+        logger.info("[{}] Clients {}", traceId, data);
+
+        return new ApiResponseDto<>(HttpStatus.OK.value(), Message.OK, new PageImpl<>(data, pageable, clients.getTotalElements()), traceId);
     }
 
     @Override
@@ -38,6 +63,6 @@ public class ClientServiceImpl implements ClientService {
         ClientResponseDto response = mapper.toDto(repository.save(client));
 
         logger.info("[{}] Client: {}", traceId, response);
-        return new ApiResponseDto<>(HttpStatus.CREATED.value(), "Client created", response, traceId);
+        return new ApiResponseDto<>(HttpStatus.CREATED.value(), Message.CLIENT_CREATED, response, traceId);
     }
 }

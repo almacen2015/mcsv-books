@@ -1,8 +1,12 @@
 package backend.utils;
 
 import backend.dtos.client.requests.ClientRequestDto;
+import backend.dtos.pageable.PageableCustom;
 import backend.enums.Gender;
 import backend.exceptions.client.ClientException;
+import backend.exceptions.page.PageException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -27,6 +31,28 @@ public class Utils {
         if (dto.birthDate() == null || isAdult(dto.birthDate())) {
             throw new ClientException(ClientException.ERROR_BIRTHDATE);
         }
+    }
+
+    public static void validatePagination(PageableCustom paginado) {
+        if (isNotPositive(paginado.page())) {
+            throw new PageException(PageException.PAGE_NUMBER_INVALID);
+        }
+
+        if (isNotPositive(paginado.size())) {
+            throw new PageException(PageException.SIZE_NUMBER_INVALID);
+        }
+
+        if (isStringValid(paginado.orderBy())) {
+            throw new PageException(PageException.SORT_NAME_INVALID);
+        }
+    }
+
+    public static boolean isNotPositive(Integer value) {
+        return value == null || value <= 0;
+    }
+
+    public static PageRequest constructPageable(PageableCustom paginado) {
+        return PageRequest.of(paginado.page() - 1, paginado.size(), Sort.by(paginado.orderBy()).descending());
     }
 
     public static boolean isValidGender(String gender) {
