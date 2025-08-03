@@ -5,6 +5,7 @@ import backend.clientservice.services.ClientService;
 import backend.dtos.apiresponse.ApiResponseDto;
 import backend.dtos.client.requests.ClientRequestDto;
 import backend.dtos.client.responses.ClientResponseDto;
+import backend.utils.Message;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,16 +13,22 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -39,6 +46,33 @@ class ClientControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Test
+    void testList_WhenPageDataIsValid_ReturnsClients() throws Exception {
+        ClientResponseDto client1 = new ClientResponseDto(1L, "Victor", "Orbegozo", LocalDate.of(1994, 4, 5), 30, 'M');
+        ClientResponseDto client2 = new ClientResponseDto(2L, "Mario", "Mesa", LocalDate.of(1994, 4, 5), 20, 'M');
+        ClientResponseDto client3 = new ClientResponseDto(3L, "Susan", "Bonita", LocalDate.of(1994, 4, 5), 29, 'F');
+        List<ClientResponseDto> clients = List.of(client1, client2, client3);
+
+        String traceId = getTraceId();
+        Pageable pageable = PageRequest.of(1, 5);
+
+        ApiResponseDto<Page<ClientResponseDto>> response = new ApiResponseDto<>(HttpStatus.OK.value(), Message.OK, new PageImpl<>(clients, pageable, clients.size()), traceId);
+
+        when(service.list(any(Integer.class), any(Integer.class), any(String.class), any(String.class))).thenReturn(response);
+
+        mockMvc.perform(get("/api/clients")
+                        .param("page", "1")
+                        .param("size", "5")
+                        .param("orderBy", "id")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.content.size()").value(clients.size()))
+                .andExpect(jsonPath("$.data.content[0].id").value(1L))
+                .andExpect(jsonPath("$.data.content[0].name").value("Victor"))
+                .andExpect(jsonPath("$.data.content[1].id").value(2L))
+                .andExpect(jsonPath("$.data.content[1].name").value("Mario"));
+    }
 
     @Test
     void testAdd_WhenDataValid_ReturnClient() throws Exception {
@@ -64,4 +98,7 @@ class ClientControllerTest {
                 .andExpect(jsonPath("$.data.age").value(30));
     }
 
+    private String getTraceId() {
+        return UUID.randomUUID().toString();
+    }
 }
