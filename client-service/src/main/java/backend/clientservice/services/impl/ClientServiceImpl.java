@@ -8,6 +8,7 @@ import backend.dtos.apiresponse.ApiResponseDto;
 import backend.dtos.client.requests.ClientRequestDto;
 import backend.dtos.client.responses.ClientResponseDto;
 import backend.dtos.pageable.PageableCustom;
+import backend.exceptions.client.ClientException;
 import backend.utils.Message;
 import backend.utils.Utils;
 import jakarta.transaction.Transactional;
@@ -20,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ClientServiceImpl implements ClientService {
@@ -30,6 +32,21 @@ public class ClientServiceImpl implements ClientService {
 
     public ClientServiceImpl(ClientRepository repository) {
         this.repository = repository;
+    }
+
+    @Override
+    public ApiResponseDto<ClientResponseDto> getById(Long id, String traceId) {
+        logger.info("[{}] Id: {}", traceId, id);
+
+        Utils.isValidId(id);
+
+        Client clientFound = repository.findById(id).orElseThrow(() -> new ClientException(ClientException.CLIENT_NOT_EXISTS));
+
+        ClientResponseDto response = mapper.toDto(clientFound);
+
+        logger.info("[{}] Response: {}", traceId, response);
+
+        return new ApiResponseDto<>(HttpStatus.FOUND.value(), Message.CLIENT_FOUND, response, traceId);
     }
 
     @Override

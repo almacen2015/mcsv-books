@@ -24,6 +24,23 @@ public class ClientController {
         this.service = service;
     }
 
+    @Operation(summary = "Get a client", description = "Get a client")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Client saved"),
+            @ApiResponse(responseCode = "400", description = "Invalid data"),
+            @ApiResponse(responseCode = "401", description = "No authorized"),
+            @ApiResponse(responseCode = "500", description = "Internal Error")
+    })
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponseDto<ClientResponseDto>> getById(@PathVariable Long id) {
+        final String traceId = Utils.generateTraceId();
+        final ApiResponseDto<ClientResponseDto> response = service.getById(id, traceId);
+
+        final HttpHeaders headers = createHeader(traceId);
+
+        return new ResponseEntity<>(response, headers, response.code());
+    }
+
     @Operation(summary = "List all clients", description = "List all clients")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Client saved"),
@@ -38,10 +55,9 @@ public class ClientController {
         final String traceId = Utils.generateTraceId();
         final ApiResponseDto<Page<ClientResponseDto>> response = service.list(page, size, orderBy, traceId);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("X-Trace-Id", traceId);
+        final HttpHeaders headers = createHeader(traceId);
 
-        return new ResponseEntity<>(response, headers, HttpStatus.OK);
+        return new ResponseEntity<>(response, headers, response.code());
     }
 
     @Operation(summary = "Add a client", description = "Add a client")
@@ -56,9 +72,14 @@ public class ClientController {
         final String traceId = Utils.generateTraceId();
         final ApiResponseDto<ClientResponseDto> response = service.add(dto, traceId);
 
+        final HttpHeaders headers = createHeader(traceId);
+
+        return new ResponseEntity<>(response, headers, response.code());
+    }
+
+    private HttpHeaders createHeader(String traceId) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-Trace-Id", traceId);
-
-        return new ResponseEntity<>(response, headers, HttpStatus.CREATED);
+        return headers;
     }
 }

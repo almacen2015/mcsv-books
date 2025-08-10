@@ -3,6 +3,7 @@ package backend.utils;
 import backend.dtos.client.requests.ClientRequestDto;
 import backend.dtos.pageable.PageableCustom;
 import backend.enums.Gender;
+import backend.exceptions.UtilException;
 import backend.exceptions.client.ClientException;
 import backend.exceptions.page.PageException;
 import org.springframework.data.domain.PageRequest;
@@ -44,6 +45,12 @@ public class Utils {
 
         if (isStringValid(paginado.orderBy())) {
             throw new PageException(PageException.SORT_NAME_INVALID);
+        }
+    }
+
+    public static void isValidId(Long id) {
+        if (isNotPositive(id.intValue())) {
+            throw new UtilException(UtilException.ID_NOT_VALID);
         }
     }
 
