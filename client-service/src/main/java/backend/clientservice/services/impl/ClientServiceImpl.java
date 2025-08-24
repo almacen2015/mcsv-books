@@ -8,6 +8,7 @@ import backend.dtos.apiresponse.ApiResponseDto;
 import backend.dtos.client.requests.ClientRequestDto;
 import backend.dtos.client.responses.ClientResponseDto;
 import backend.dtos.pageable.PageableCustom;
+import backend.enums.Gender;
 import backend.exceptions.client.ClientException;
 import backend.utils.Message;
 import backend.utils.Utils;
@@ -21,7 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 
 @Service
 public class ClientServiceImpl implements ClientService {
@@ -32,6 +33,28 @@ public class ClientServiceImpl implements ClientService {
 
     public ClientServiceImpl(ClientRepository repository) {
         this.repository = repository;
+    }
+
+    @Override
+    public ApiResponseDto<ClientResponseDto> update(Long id, ClientRequestDto dto, String traceId) {
+        logger.info("Iniciando update");
+        logger.info("[ {} ] id: {}, client update {}", traceId, id, dto);
+
+        Utils.isValidId(id);
+        Client clientFound = repository.findById(id).orElseThrow(() -> new ClientException(ClientException.CLIENT_NOT_EXISTS));
+
+        clientFound.setName(dto.name());
+        clientFound.setLastName(dto.lastName());
+        char gender = Objects.equals(dto.gender(), String.valueOf(Gender.MALE.getCode())) ? Gender.MALE.getCode() : Gender.FEMALE.getCode();
+        clientFound.setGender(gender);
+        clientFound.setBirthDate(dto.birthDate());
+        clientFound.setAge(Utils.getAge(dto.birthDate()));
+
+        ClientResponseDto response = mapper.toDto(repository.save(clientFound));
+
+        logger.info("[{}] response: {}", traceId, response);
+
+        return new ApiResponseDto<>(HttpStatus.OK.value(), Message.CLIENT_UPDATE, response, traceId);
     }
 
     @Override

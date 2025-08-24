@@ -5,4 +5,5 @@ public class Message {
 
     public static final String CLIENT_CREATED = "Client created";
     public static final String CLIENT_FOUND = "Client found";
+    public static final String CLIENT_UPDATE = "Client updated";
 }

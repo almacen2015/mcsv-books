@@ -8,9 +8,9 @@ import backend.utils.Utils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +23,22 @@ public class ClientController {
     public ClientController(ClientService service) {
         this.service = service;
     }
+
+    @Operation(summary = "Update a client", description = "Update a client")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Client saved"),
+            @ApiResponse(responseCode = "400", description = "Invalid data"),
+            @ApiResponse(responseCode = "401", description = "No authorized"),
+            @ApiResponse(responseCode = "500", description = "Internal Error")
+    })
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponseDto<ClientResponseDto>> update(@PathVariable Long id, @RequestBody ClientRequestDto request) {
+        final String traceId = Utils.generateTraceId();
+        final ApiResponseDto<ClientResponseDto> response = service.update(id, request, traceId);
+        final HttpHeaders headers = createHeader(traceId);
+        return new ResponseEntity<>(response, headers, response.code());
+    }
+
 
     @Operation(summary = "Get a client", description = "Get a client")
     @ApiResponses(value = {

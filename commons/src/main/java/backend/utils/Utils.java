@@ -63,7 +63,7 @@ public class Utils {
     }
 
     public static boolean isValidGender(String gender) {
-        return gender.equals(Gender.M.name()) || gender.equals(Gender.F.name());
+        return gender.equals(String.valueOf(Gender.MALE.getCode())) || gender.equals(String.valueOf(Gender.FEMALE.getCode()));
     }
 
     public static int getAge(LocalDate birthDate) {
