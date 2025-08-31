@@ -5,6 +5,7 @@ import backend.clientservice.repositories.ClientRepository;
 import backend.dtos.apiresponse.ApiResponseDto;
 import backend.dtos.client.requests.ClientRequestDto;
 import backend.dtos.client.responses.ClientResponseDto;
+import backend.enums.Gender;
 import backend.exceptions.UtilException;
 import backend.exceptions.client.ClientException;
 import backend.exceptions.page.PageException;
@@ -38,6 +39,103 @@ class ClientServiceImplTest {
     private ClientServiceImpl service;
 
     @Test
+    void testUpdate_whenValidData_returnsClient() {
+        Client clientFound = new Client(1L, "Maria", "Rosas", LocalDate.of(1994, 7, 22), 30, Gender.FEMALE.getCode());
+        ClientRequestDto request = new ClientRequestDto("Victor", "Orbegozo", LocalDate.of(1994, 4, 5), "M");
+        String traceId = UUID.randomUUID().toString();
+
+        when(repository.findById(any())).thenReturn(Optional.of(clientFound));
+        when(repository.save(any(Client.class))).thenReturn(clientFound);
+        ApiResponseDto<ClientResponseDto> response = service.update(1L, request, traceId);
+
+        assertThat(response.data()).isNotNull();
+        assertEquals(request.name(), response.data().name());
+        assertEquals(request.lastName(), response.data().lastName());
+        assertEquals('M', response.data().gender());
+        assertEquals(request.birthDate(), response.data().birthDate());
+    }
+
+    @Test
+    void testUpdate_whenGenderEmpty_returnsError() {
+        ClientRequestDto request = new ClientRequestDto("Victor", "Orbegozo", LocalDate.of(1994, 4, 5), " ");
+        String traceId = UUID.randomUUID().toString();
+
+        ClientException exception = assertThrows(ClientException.class, () -> service.update(1L, request, traceId));
+
+        assertThat(exception.getMessage()).isEqualTo(ClientException.ERROR_GENDER);
+    }
+
+    @Test
+    void testUpdate_whenGenderNull_returnsError() {
+        ClientRequestDto request = new ClientRequestDto("Victor", "Orbegozo", LocalDate.of(1994, 4, 5), null);
+        String traceId = UUID.randomUUID().toString();
+
+        ClientException exception = assertThrows(ClientException.class, () -> service.update(1L, request, traceId));
+
+        assertThat(exception.getMessage()).isEqualTo(ClientException.ERROR_GENDER);
+    }
+
+    @Test
+    void testUpdate_whenBirthdateInvalid_returnsError() {
+        ClientRequestDto request = new ClientRequestDto("Victor", "Orbegozo", LocalDate.of(1994, 13, 5), "M");
+        String traceId = UUID.randomUUID().toString();
+
+        ClientException exception = assertThrows(ClientException.class, () -> service.update(1L, request, traceId));
+
+        assertThat(exception.getMessage()).isEqualTo(ClientException.ERROR_BIRTHDATE);
+    }
+
+    @Test
+    void testUpdate_whenBirthdateNull_returnsError() {
+        ClientRequestDto request = new ClientRequestDto("Victor", "Orbegozo", null, "M");
+        String traceId = UUID.randomUUID().toString();
+
+        ClientException exception = assertThrows(ClientException.class, () -> service.update(1L, request, traceId));
+
+        assertThat(exception.getMessage()).isEqualTo(ClientException.ERROR_BIRTHDATE);
+    }
+
+    @Test
+    void testUpdate_whenLastNameEmpty_returnsError() {
+        ClientRequestDto request = new ClientRequestDto("Victor", " ", LocalDate.of(1994, 4, 5), "M");
+        String traceId = UUID.randomUUID().toString();
+
+        ClientException exception = assertThrows(ClientException.class, () -> service.update(1L, request, traceId));
+
+        assertThat(exception.getMessage()).isEqualTo(ClientException.ERROR_LASTNAME);
+    }
+
+    @Test
+    void testUpdate_whenLastNameNull_returnError() {
+        ClientRequestDto request = new ClientRequestDto("Victor", null, LocalDate.of(1994, 4, 5), "M");
+        String traceId = UUID.randomUUID().toString();
+
+        ClientException exception = assertThrows(ClientException.class, () -> service.update(1L, request, traceId));
+
+        assertThat(exception.getMessage()).isEqualTo(ClientException.ERROR_LASTNAME);
+    }
+
+    @Test
+    void testUpdate_whenNameEmpty_returnsError() {
+        ClientRequestDto request = new ClientRequestDto(" ", "Orbegozo", LocalDate.of(1994, 4, 5), "M");
+        String traceId = UUID.randomUUID().toString();
+
+        ClientException exception = assertThrows(ClientException.class, () -> service.update(1L, request, traceId));
+
+        assertThat(exception.getMessage()).isEqualTo(ClientException.ERROR_NAME);
+    }
+
+    @Test
+    void testUpdate_whenNameNull_returnsError() {
+        String traceId = UUID.randomUUID().toString();
+        ClientRequestDto request = new ClientRequestDto(null, "Orbegozo", LocalDate.of(1994, 4, 5), "M");
+
+        ClientException exception = assertThrows(ClientException.class, () -> service.update(1L, request, traceId));
+
+        assertThat(exception.getMessage()).isEqualTo(ClientException.ERROR_NAME);
+    }
+
+    @Test
     void testUpdate_whenClientNotFound_ReturnsError() {
         String traceId = UUID.randomUUID().toString();
         when(repository.findById(any())).thenReturn(Optional.empty());
@@ -46,9 +144,6 @@ class ClientServiceImplTest {
         ClientException exception = assertThrows(ClientException.class, () -> service.update(2L, dto, traceId));
         assertThat(exception.getMessage()).isEqualTo(ClientException.CLIENT_NOT_EXISTS);
     }
-
-    @Test
-    void testUpdate_whenNameNull_returnsError(){}
 
     @Test
     void testUpdate_whenInvalidId_returnsError() {
