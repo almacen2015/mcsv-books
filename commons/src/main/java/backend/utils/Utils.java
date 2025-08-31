@@ -49,13 +49,13 @@ public class Utils {
     }
 
     public static void isValidId(Long id) {
-        if (isNotPositive(id.intValue())) {
+        if (id == null || isNotPositive(id.intValue())) {
             throw new UtilException(UtilException.ID_NOT_VALID);
         }
     }
 
     public static boolean isNotPositive(Integer value) {
-        return value == null || value <= 0;
+        return value <= 0;
     }
 
     public static PageRequest constructPageable(PageableCustom paginado) {

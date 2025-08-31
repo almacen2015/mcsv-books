@@ -5,6 +5,7 @@ import backend.clientservice.repositories.ClientRepository;
 import backend.dtos.apiresponse.ApiResponseDto;
 import backend.dtos.client.requests.ClientRequestDto;
 import backend.dtos.client.responses.ClientResponseDto;
+import backend.exceptions.UtilException;
 import backend.exceptions.client.ClientException;
 import backend.exceptions.page.PageException;
 import org.junit.jupiter.api.Test;
@@ -12,10 +13,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,63 +38,84 @@ class ClientServiceImplTest {
     private ClientServiceImpl service;
 
     @Test
-    void testList_WhenOrderByIsEmpty_ReturnsError() {
+    void testUpdate_whenClientNotFound_ReturnsError() {
+        String traceId = UUID.randomUUID().toString();
+        when(repository.findById(any())).thenReturn(Optional.empty());
+        ClientRequestDto dto = new ClientRequestDto("Victor", "Orbegozo", LocalDate.of(1994, 4, 5), "M");
+
+        ClientException exception = assertThrows(ClientException.class, () -> service.update(2L, dto, traceId));
+        assertThat(exception.getMessage()).isEqualTo(ClientException.CLIENT_NOT_EXISTS);
+    }
+
+    @Test
+    void testUpdate_whenNameNull_returnsError(){}
+
+    @Test
+    void testUpdate_whenInvalidId_returnsError() {
+        String traceId = UUID.randomUUID().toString();
+        ClientRequestDto dto = new ClientRequestDto("Victor", "Orbegozo", LocalDate.of(1994, 4, 5), "M");
+        UtilException exception = assertThrows(UtilException.class, () -> service.update(null, dto, traceId));
+        assertThat(exception.getMessage()).isEqualTo(UtilException.ID_NOT_VALID);
+    }
+
+    @Test
+    void testList_whenOrderByIsEmpty_returnsError() {
         String traceId = UUID.randomUUID().toString();
         PageException exception = assertThrows(PageException.class, () -> service.list(1, 5, " ", traceId));
         assertThat(exception.getMessage()).isEqualTo(PageException.SORT_NAME_INVALID);
     }
 
     @Test
-    void testList_WhenOrderByIsNull_ReturnsError() {
+    void testList_whenOrderByIsNull_returnsError() {
         String traceId = UUID.randomUUID().toString();
         PageException exception = assertThrows(PageException.class, () -> service.list(1, 5, null, traceId));
         assertThat(exception.getMessage()).isEqualTo(PageException.SORT_NAME_INVALID);
     }
 
     @Test
-    void testList_WhenSizeIsNull_ReturnsError() {
+    void testList_whenSizeIsNull_returnsError() {
         String traceId = UUID.randomUUID().toString();
         PageException exception = assertThrows(PageException.class, () -> service.list(1, null, "id", traceId));
         assertThat(exception.getMessage()).isEqualTo(PageException.SIZE_NUMBER_INVALID);
     }
 
     @Test
-    void testList_WhenSizeIsInvalid_ReturnsError() {
+    void testList_whenSizeIsInvalid_returnsError() {
         String traceId = UUID.randomUUID().toString();
         PageException exception = assertThrows(PageException.class, () -> service.list(1, -1, "id", traceId));
         assertThat(exception.getMessage()).isEqualTo(PageException.SIZE_NUMBER_INVALID);
     }
 
     @Test
-    void testList_WhenSizeIsZero_ReturnsError() {
+    void testList_whenSizeIsZero_returnsError() {
         String traceId = UUID.randomUUID().toString();
         PageException exception = assertThrows(PageException.class, () -> service.list(1, 0, "id", traceId));
         assertThat(exception.getMessage()).isEqualTo(PageException.SIZE_NUMBER_INVALID);
     }
 
     @Test
-    void testList_WhenPageNumberIsNull_ReturnsError() {
+    void testList_whenPageNumberIsNull_returnsError() {
         String traceId = UUID.randomUUID().toString();
         PageException exception = assertThrows(PageException.class, () -> service.list(null, 5, "id", traceId));
         assertThat(exception.getMessage()).isEqualTo(PageException.PAGE_NUMBER_INVALID);
     }
 
     @Test
-    void testList_WhenPageNumberIsInvalid_ReturnsError() {
+    void testList_whenPageNumberIsInvalid_returnsError() {
         String traceId = UUID.randomUUID().toString();
         PageException exception = assertThrows(PageException.class, () -> service.list(-1, 5, "id", traceId));
         assertThat(exception.getMessage()).isEqualTo(PageException.PAGE_NUMBER_INVALID);
     }
 
     @Test
-    void testList_WhenPageNumberIsZero_ReturnsError() {
+    void testList_whenPageNumberIsZero_returnsError() {
         String traceId = UUID.randomUUID().toString();
         PageException exception = assertThrows(PageException.class, () -> service.list(0, 5, "id", traceId));
         assertThat(exception.getMessage()).isEqualTo(PageException.PAGE_NUMBER_INVALID);
     }
 
     @Test
-    void testList_WhenPageDataValid_ReturnsEmpty() {
+    void testList_whenPageDataValid_returnsEmpty() {
         String traceId = UUID.randomUUID().toString();
         Pageable pageable = PageRequest.of(1, 5);
 
@@ -100,7 +126,7 @@ class ClientServiceImplTest {
     }
 
     @Test
-    void testList_WhenPageDataValid_ReturnsClients() {
+    void testList_whenPageDataValid_returnsClients() {
         Client client1 = new Client(1L, "Victor", "Orbegozo", LocalDate.of(1994, 4, 5), 30, 'M');
         Client client2 = new Client(2L, "Luis", "Mesa", LocalDate.of(1994, 4, 5), 30, 'M');
         Client client3 = new Client(3L, "Mario", "Mario", LocalDate.of(1994, 4, 5), 30, 'M');
@@ -120,7 +146,7 @@ class ClientServiceImplTest {
     }
 
     @Test
-    void testAdd_WhenGenderInvalid_ReturnsError() {
+    void testAdd_whenGenderInvalid_returnsError() {
         ClientRequestDto request = new ClientRequestDto("Victor", "Orbegozo", LocalDate.of(1994, 4, 5), "A");
         String traceId = UUID.randomUUID().toString();
 
@@ -130,7 +156,7 @@ class ClientServiceImplTest {
     }
 
     @Test
-    void testAdd_WhenGenderEmpty_ReturnsError() {
+    void testAdd_whenGenderEmpty_returnsError() {
         ClientRequestDto request = new ClientRequestDto("Victor", "Orbegozo", LocalDate.of(1994, 4, 5), " ");
         String traceId = UUID.randomUUID().toString();
 
@@ -140,7 +166,7 @@ class ClientServiceImplTest {
     }
 
     @Test
-    void testAdd_WhenGenderNull_ReturnsError() {
+    void testAdd_whenGenderNull_returnsError() {
         ClientRequestDto request = new ClientRequestDto("Victor", "Orbegozo", LocalDate.of(1994, 4, 5), null);
         String traceId = UUID.randomUUID().toString();
 
@@ -150,7 +176,7 @@ class ClientServiceImplTest {
     }
 
     @Test
-    void testAdd_WhenBirthdateInvalid_ReturnsError() {
+    void testAdd_whenBirthdateInvalid_returnsError() {
         ClientRequestDto request = new ClientRequestDto("Victor", "Orbegozo", LocalDate.of(1994, 13, 5), "M");
         String traceId = UUID.randomUUID().toString();
 
@@ -160,7 +186,7 @@ class ClientServiceImplTest {
     }
 
     @Test
-    void testAdd_WhenBirthdateNull_ReturnsError() {
+    void testAdd_whenBirthdateNull_returnsError() {
         ClientRequestDto request = new ClientRequestDto("Victor", "Orbegozo", null, "M");
         String traceId = UUID.randomUUID().toString();
 
@@ -170,7 +196,7 @@ class ClientServiceImplTest {
     }
 
     @Test
-    void testAdd_WhenLastNameEmpty_ReturnsError() {
+    void testAdd_whenLastNameEmpty_returnsError() {
         ClientRequestDto request = new ClientRequestDto("Victor", " ", LocalDate.of(1994, 4, 5), "M");
         String traceId = UUID.randomUUID().toString();
 
@@ -180,7 +206,7 @@ class ClientServiceImplTest {
     }
 
     @Test
-    void testAdd_WhenLastNameNull_ReturnError() {
+    void testAdd_whenLastNameNull_returnError() {
         ClientRequestDto request = new ClientRequestDto("Victor", null, LocalDate.of(1994, 4, 5), "M");
         String traceId = UUID.randomUUID().toString();
 
@@ -190,7 +216,7 @@ class ClientServiceImplTest {
     }
 
     @Test
-    void testAdd_WhenNameEmpty_ReturnsError() {
+    void testAdd_whenNameEmpty_returnsError() {
         ClientRequestDto request = new ClientRequestDto(" ", "Orbegozo", LocalDate.of(1994, 4, 5), "M");
         String traceId = UUID.randomUUID().toString();
 
@@ -200,7 +226,7 @@ class ClientServiceImplTest {
     }
 
     @Test
-    void testAdd_WhenNameNull_ReturnsError() {
+    void testAdd_whenNameNull_returnsError() {
         ClientRequestDto request = new ClientRequestDto(null, "Orbegozo", LocalDate.of(1994, 4, 5), "M");
         String traceId = UUID.randomUUID().toString();
 
@@ -210,7 +236,7 @@ class ClientServiceImplTest {
     }
 
     @Test
-    void testAdd_WhenValidData_ReturnsClient() {
+    void testAdd_whenValidData_returnsClient() {
         Client client = new Client(1L, "Victor", "Orbegozo", LocalDate.of(1994, 4, 5), 30, 'M');
         ClientRequestDto request = new ClientRequestDto("Victor", "Orbegozo", LocalDate.of(1994, 4, 5), "M");
         String traceId = UUID.randomUUID().toString();

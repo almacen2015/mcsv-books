@@ -41,6 +41,7 @@ public class ClientServiceImpl implements ClientService {
         logger.info("[ {} ] id: {}, client update {}", traceId, id, dto);
 
         Utils.isValidId(id);
+        Utils.validateClientDto(dto);
         Client clientFound = repository.findById(id).orElseThrow(() -> new ClientException(ClientException.CLIENT_NOT_EXISTS));
 
         clientFound.setName(dto.name());
