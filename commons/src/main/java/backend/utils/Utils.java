@@ -78,15 +78,14 @@ public class Utils {
 
     public static boolean isAdult(LocalDate birthDate) {
         LocalDate now = LocalDate.now();
-        System.out.println(Period.between(now, birthDate).getYears());
         return Period.between(birthDate, now).getYears() > 18;
     }
 
     public static LocalDate toLocalDate(String date) {
+        if (date == null || date.isBlank()) {
+            throw new UtilException(UtilException.DATE_NOT_VALID);
+        }
         try {
-            if (date == null) {
-                throw new UtilException(UtilException.DATE_NOT_VALID);
-            }
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             return LocalDate.parse(date, formatter);
         } catch (DateTimeParseException e) {
