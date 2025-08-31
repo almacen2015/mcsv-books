@@ -21,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -48,8 +49,10 @@ public class ClientServiceImpl implements ClientService {
         clientFound.setLastName(dto.lastName());
         char gender = Objects.equals(dto.gender(), String.valueOf(Gender.MALE.getCode())) ? Gender.MALE.getCode() : Gender.FEMALE.getCode();
         clientFound.setGender(gender);
-        clientFound.setBirthDate(dto.birthDate());
-        clientFound.setAge(Utils.getAge(dto.birthDate()));
+
+        LocalDate date = Utils.toLocalDate(dto.birthDate());
+        clientFound.setBirthDate(date);
+        clientFound.setAge(Utils.getAge(date));
 
         ClientResponseDto response = mapper.toDto(repository.save(clientFound));
 

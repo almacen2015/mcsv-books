@@ -11,6 +11,8 @@ import org.springframework.data.domain.Sort;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.UUID;
 
 public class Utils {
@@ -29,7 +31,9 @@ public class Utils {
             throw new ClientException(ClientException.ERROR_GENDER);
         }
 
-        if (dto.birthDate() == null || isAdult(dto.birthDate())) {
+        LocalDate date = toLocalDate(dto.birthDate());
+
+        if (!isAdult(date)) {
             throw new ClientException(ClientException.ERROR_BIRTHDATE);
         }
     }
@@ -55,7 +59,7 @@ public class Utils {
     }
 
     public static boolean isNotPositive(Integer value) {
-        return value <= 0;
+        return value == null || value <= 0;
     }
 
     public static PageRequest constructPageable(PageableCustom paginado) {
@@ -74,7 +78,20 @@ public class Utils {
 
     public static boolean isAdult(LocalDate birthDate) {
         LocalDate now = LocalDate.now();
-        return Period.between(now, birthDate).getYears() > 18;
+        System.out.println(Period.between(now, birthDate).getYears());
+        return Period.between(birthDate, now).getYears() > 18;
+    }
+
+    public static LocalDate toLocalDate(String date) {
+        try {
+            if (date == null) {
+                throw new UtilException(UtilException.DATE_NOT_VALID);
+            }
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            return LocalDate.parse(date, formatter);
+        } catch (DateTimeParseException e) {
+            throw new UtilException(UtilException.DATE_NOT_VALID);
+        }
     }
 
     public static boolean isStringValid(String string) {

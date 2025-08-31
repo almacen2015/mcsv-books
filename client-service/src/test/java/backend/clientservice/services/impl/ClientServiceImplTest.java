@@ -9,6 +9,7 @@ import backend.enums.Gender;
 import backend.exceptions.UtilException;
 import backend.exceptions.client.ClientException;
 import backend.exceptions.page.PageException;
+import backend.utils.Utils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -41,7 +42,7 @@ class ClientServiceImplTest {
     @Test
     void testUpdate_whenValidData_returnsClient() {
         Client clientFound = new Client(1L, "Maria", "Rosas", LocalDate.of(1994, 7, 22), 30, Gender.FEMALE.getCode());
-        ClientRequestDto request = new ClientRequestDto("Victor", "Orbegozo", LocalDate.of(1994, 4, 5), "M");
+        ClientRequestDto request = new ClientRequestDto("Victor", "Orbegozo", "1994-04-05", "M");
         String traceId = UUID.randomUUID().toString();
 
         when(repository.findById(any())).thenReturn(Optional.of(clientFound));
@@ -52,12 +53,12 @@ class ClientServiceImplTest {
         assertEquals(request.name(), response.data().name());
         assertEquals(request.lastName(), response.data().lastName());
         assertEquals('M', response.data().gender());
-        assertEquals(request.birthDate(), response.data().birthDate());
+        assertEquals(Utils.toLocalDate(request.birthDate()), response.data().birthDate());
     }
 
     @Test
     void testUpdate_whenGenderEmpty_returnsError() {
-        ClientRequestDto request = new ClientRequestDto("Victor", "Orbegozo", LocalDate.of(1994, 4, 5), " ");
+        ClientRequestDto request = new ClientRequestDto("Victor", "Orbegozo", "1994-04-05", " ");
         String traceId = UUID.randomUUID().toString();
 
         ClientException exception = assertThrows(ClientException.class, () -> service.update(1L, request, traceId));
@@ -67,7 +68,7 @@ class ClientServiceImplTest {
 
     @Test
     void testUpdate_whenGenderNull_returnsError() {
-        ClientRequestDto request = new ClientRequestDto("Victor", "Orbegozo", LocalDate.of(1994, 4, 5), null);
+        ClientRequestDto request = new ClientRequestDto("Victor", "Orbegozo", "1994-04-05", null);
         String traceId = UUID.randomUUID().toString();
 
         ClientException exception = assertThrows(ClientException.class, () -> service.update(1L, request, traceId));
@@ -76,8 +77,18 @@ class ClientServiceImplTest {
     }
 
     @Test
-    void testUpdate_whenBirthdateInvalid_returnsError() {
-        ClientRequestDto request = new ClientRequestDto("Victor", "Orbegozo", LocalDate.of(1994, 13, 5), "M");
+    void testUpdate_whenBirthdateIsNotValid_returnsError() {
+        ClientRequestDto request = new ClientRequestDto("Victor", "Orbegozo", "1994-15-05", "M");
+        String traceId = UUID.randomUUID().toString();
+
+        UtilException exception = assertThrows(UtilException.class, () -> service.update(1L, request, traceId));
+
+        assertThat(exception.getMessage()).isEqualTo(UtilException.DATE_NOT_VALID);
+    }
+
+    @Test
+    void testUpdate_whenBirthdateIsNotAdult_returnsError() {
+        ClientRequestDto request = new ClientRequestDto("Victor", "Orbegozo", "2020-12-05", "M");
         String traceId = UUID.randomUUID().toString();
 
         ClientException exception = assertThrows(ClientException.class, () -> service.update(1L, request, traceId));
@@ -90,14 +101,14 @@ class ClientServiceImplTest {
         ClientRequestDto request = new ClientRequestDto("Victor", "Orbegozo", null, "M");
         String traceId = UUID.randomUUID().toString();
 
-        ClientException exception = assertThrows(ClientException.class, () -> service.update(1L, request, traceId));
+        UtilException exception = assertThrows(UtilException.class, () -> service.update(1L, request, traceId));
 
-        assertThat(exception.getMessage()).isEqualTo(ClientException.ERROR_BIRTHDATE);
+        assertThat(exception.getMessage()).isEqualTo(UtilException.DATE_NOT_VALID);
     }
 
     @Test
     void testUpdate_whenLastNameEmpty_returnsError() {
-        ClientRequestDto request = new ClientRequestDto("Victor", " ", LocalDate.of(1994, 4, 5), "M");
+        ClientRequestDto request = new ClientRequestDto("Victor", " ", "1994-04-05", "M");
         String traceId = UUID.randomUUID().toString();
 
         ClientException exception = assertThrows(ClientException.class, () -> service.update(1L, request, traceId));
@@ -107,7 +118,7 @@ class ClientServiceImplTest {
 
     @Test
     void testUpdate_whenLastNameNull_returnError() {
-        ClientRequestDto request = new ClientRequestDto("Victor", null, LocalDate.of(1994, 4, 5), "M");
+        ClientRequestDto request = new ClientRequestDto("Victor", null, "1994-04-05", "M");
         String traceId = UUID.randomUUID().toString();
 
         ClientException exception = assertThrows(ClientException.class, () -> service.update(1L, request, traceId));
@@ -117,7 +128,7 @@ class ClientServiceImplTest {
 
     @Test
     void testUpdate_whenNameEmpty_returnsError() {
-        ClientRequestDto request = new ClientRequestDto(" ", "Orbegozo", LocalDate.of(1994, 4, 5), "M");
+        ClientRequestDto request = new ClientRequestDto(" ", "Orbegozo", "1994-04-05", "M");
         String traceId = UUID.randomUUID().toString();
 
         ClientException exception = assertThrows(ClientException.class, () -> service.update(1L, request, traceId));
@@ -128,7 +139,7 @@ class ClientServiceImplTest {
     @Test
     void testUpdate_whenNameNull_returnsError() {
         String traceId = UUID.randomUUID().toString();
-        ClientRequestDto request = new ClientRequestDto(null, "Orbegozo", LocalDate.of(1994, 4, 5), "M");
+        ClientRequestDto request = new ClientRequestDto(null, "Orbegozo", "1994-04-05", "M");
 
         ClientException exception = assertThrows(ClientException.class, () -> service.update(1L, request, traceId));
 
@@ -139,7 +150,7 @@ class ClientServiceImplTest {
     void testUpdate_whenClientNotFound_ReturnsError() {
         String traceId = UUID.randomUUID().toString();
         when(repository.findById(any())).thenReturn(Optional.empty());
-        ClientRequestDto dto = new ClientRequestDto("Victor", "Orbegozo", LocalDate.of(1994, 4, 5), "M");
+        ClientRequestDto dto = new ClientRequestDto("Victor", "Orbegozo", "1994-04-05", "M");
 
         ClientException exception = assertThrows(ClientException.class, () -> service.update(2L, dto, traceId));
         assertThat(exception.getMessage()).isEqualTo(ClientException.CLIENT_NOT_EXISTS);
@@ -148,7 +159,7 @@ class ClientServiceImplTest {
     @Test
     void testUpdate_whenInvalidId_returnsError() {
         String traceId = UUID.randomUUID().toString();
-        ClientRequestDto dto = new ClientRequestDto("Victor", "Orbegozo", LocalDate.of(1994, 4, 5), "M");
+        ClientRequestDto dto = new ClientRequestDto("Victor", "Orbegozo", "1994-04-05", "M");
         UtilException exception = assertThrows(UtilException.class, () -> service.update(null, dto, traceId));
         assertThat(exception.getMessage()).isEqualTo(UtilException.ID_NOT_VALID);
     }
@@ -242,7 +253,7 @@ class ClientServiceImplTest {
 
     @Test
     void testAdd_whenGenderInvalid_returnsError() {
-        ClientRequestDto request = new ClientRequestDto("Victor", "Orbegozo", LocalDate.of(1994, 4, 5), "A");
+        ClientRequestDto request = new ClientRequestDto("Victor", "Orbegozo", "1994-04-05", "A");
         String traceId = UUID.randomUUID().toString();
 
         ClientException exception = assertThrows(ClientException.class, () -> service.add(request, traceId));
@@ -252,7 +263,7 @@ class ClientServiceImplTest {
 
     @Test
     void testAdd_whenGenderEmpty_returnsError() {
-        ClientRequestDto request = new ClientRequestDto("Victor", "Orbegozo", LocalDate.of(1994, 4, 5), " ");
+        ClientRequestDto request = new ClientRequestDto("Victor", "Orbegozo", "1994-04-05", " ");
         String traceId = UUID.randomUUID().toString();
 
         ClientException exception = assertThrows(ClientException.class, () -> service.add(request, traceId));
@@ -262,7 +273,7 @@ class ClientServiceImplTest {
 
     @Test
     void testAdd_whenGenderNull_returnsError() {
-        ClientRequestDto request = new ClientRequestDto("Victor", "Orbegozo", LocalDate.of(1994, 4, 5), null);
+        ClientRequestDto request = new ClientRequestDto("Victor", "Orbegozo", "1994-04-05", null);
         String traceId = UUID.randomUUID().toString();
 
         ClientException exception = assertThrows(ClientException.class, () -> service.add(request, traceId));
@@ -271,13 +282,23 @@ class ClientServiceImplTest {
     }
 
     @Test
-    void testAdd_whenBirthdateInvalid_returnsError() {
-        ClientRequestDto request = new ClientRequestDto("Victor", "Orbegozo", LocalDate.of(1994, 13, 5), "M");
+    void testAdd_whenBirthdateIsNotAdult_returnsError() {
+        ClientRequestDto request = new ClientRequestDto("Victor", "Orbegozo", "2020-10-05", "M");
         String traceId = UUID.randomUUID().toString();
 
         ClientException exception = assertThrows(ClientException.class, () -> service.add(request, traceId));
 
         assertThat(exception.getMessage()).isEqualTo(ClientException.ERROR_BIRTHDATE);
+    }
+
+    @Test
+    void testAdd_whenBirthdateInvalid_returnsError() {
+        ClientRequestDto request = new ClientRequestDto("Victor", "Orbegozo", "1994-13-05", "M");
+        String traceId = UUID.randomUUID().toString();
+
+        UtilException exception = assertThrows(UtilException.class, () -> service.add(request, traceId));
+
+        assertThat(exception.getMessage()).isEqualTo(UtilException.DATE_NOT_VALID);
     }
 
     @Test
@@ -285,14 +306,14 @@ class ClientServiceImplTest {
         ClientRequestDto request = new ClientRequestDto("Victor", "Orbegozo", null, "M");
         String traceId = UUID.randomUUID().toString();
 
-        ClientException exception = assertThrows(ClientException.class, () -> service.add(request, traceId));
+        UtilException exception = assertThrows(UtilException.class, () -> service.add(request, traceId));
 
-        assertThat(exception.getMessage()).isEqualTo(ClientException.ERROR_BIRTHDATE);
+        assertThat(exception.getMessage()).isEqualTo(UtilException.DATE_NOT_VALID);
     }
 
     @Test
     void testAdd_whenLastNameEmpty_returnsError() {
-        ClientRequestDto request = new ClientRequestDto("Victor", " ", LocalDate.of(1994, 4, 5), "M");
+        ClientRequestDto request = new ClientRequestDto("Victor", " ", "1994-04-05", "M");
         String traceId = UUID.randomUUID().toString();
 
         ClientException exception = assertThrows(ClientException.class, () -> service.add(request, traceId));
@@ -302,7 +323,7 @@ class ClientServiceImplTest {
 
     @Test
     void testAdd_whenLastNameNull_returnError() {
-        ClientRequestDto request = new ClientRequestDto("Victor", null, LocalDate.of(1994, 4, 5), "M");
+        ClientRequestDto request = new ClientRequestDto("Victor", null, "1994-04-05", "M");
         String traceId = UUID.randomUUID().toString();
 
         ClientException exception = assertThrows(ClientException.class, () -> service.add(request, traceId));
@@ -312,7 +333,7 @@ class ClientServiceImplTest {
 
     @Test
     void testAdd_whenNameEmpty_returnsError() {
-        ClientRequestDto request = new ClientRequestDto(" ", "Orbegozo", LocalDate.of(1994, 4, 5), "M");
+        ClientRequestDto request = new ClientRequestDto(" ", "Orbegozo", "1994-04-05", "M");
         String traceId = UUID.randomUUID().toString();
 
         ClientException exception = assertThrows(ClientException.class, () -> service.add(request, traceId));
@@ -322,7 +343,7 @@ class ClientServiceImplTest {
 
     @Test
     void testAdd_whenNameNull_returnsError() {
-        ClientRequestDto request = new ClientRequestDto(null, "Orbegozo", LocalDate.of(1994, 4, 5), "M");
+        ClientRequestDto request = new ClientRequestDto(null, "Orbegozo", "1994-04-05", "M");
         String traceId = UUID.randomUUID().toString();
 
         ClientException exception = assertThrows(ClientException.class, () -> service.add(request, traceId));
@@ -333,7 +354,7 @@ class ClientServiceImplTest {
     @Test
     void testAdd_whenValidData_returnsClient() {
         Client client = new Client(1L, "Victor", "Orbegozo", LocalDate.of(1994, 4, 5), 30, 'M');
-        ClientRequestDto request = new ClientRequestDto("Victor", "Orbegozo", LocalDate.of(1994, 4, 5), "M");
+        ClientRequestDto request = new ClientRequestDto("Victor", "Orbegozo", "1994-05-04", "M");
         String traceId = UUID.randomUUID().toString();
 
         when(repository.save(any(Client.class))).thenReturn(client);

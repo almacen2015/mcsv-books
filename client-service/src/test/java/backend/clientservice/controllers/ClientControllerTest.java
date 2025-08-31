@@ -1,14 +1,11 @@
 package backend.clientservice.controllers;
 
-import backend.clientservice.models.entities.Client;
 import backend.clientservice.security.TestSecurityConfig;
 import backend.clientservice.services.ClientService;
 import backend.dtos.apiresponse.ApiResponseDto;
 import backend.dtos.client.requests.ClientRequestDto;
 import backend.dtos.client.responses.ClientResponseDto;
-import backend.enums.Gender;
 import backend.utils.Message;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -52,7 +49,7 @@ class ClientControllerTest {
     @Test
     void testUpdate_whenValidData_returnsClient() throws Exception {
         ClientResponseDto response = new ClientResponseDto(1L, "Susan", "Chapoñan", LocalDate.of(1994, 9, 22), 31, 'F');
-        ClientRequestDto dto = new ClientRequestDto("Susan", "Chapoñan", LocalDate.of(1994, 9, 22), "F");
+        ClientRequestDto dto = new ClientRequestDto("Susan", "Chapoñan", "1994-07-22", "F");
 
         String traceId = getTraceId();
         ApiResponseDto<ClientResponseDto> apiResponseDto = new ApiResponseDto<>(HttpStatus.CREATED.value(), "Updated client", response, traceId);
@@ -103,7 +100,7 @@ class ClientControllerTest {
     void testAdd_WhenDataValid_ReturnClient() throws Exception {
         String traceId = UUID.randomUUID().toString();
 
-        ClientRequestDto request = new ClientRequestDto("Victor", "Orbegozo", LocalDate.of(1994, 4, 5), "M");
+        ClientRequestDto request = new ClientRequestDto("Victor", "Orbegozo", "1994-04-05", "M");
         ClientResponseDto response = new ClientResponseDto(1L, "Victor", "Orbegozo", LocalDate.of(1994, 4, 5), 30, 'M');
         ApiResponseDto<ClientResponseDto> apiResponseDto = new ApiResponseDto<>(HttpStatus.CREATED.value(), "Cliente created", response, traceId);
 
