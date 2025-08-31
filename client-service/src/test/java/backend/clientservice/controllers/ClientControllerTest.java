@@ -1,11 +1,14 @@
 package backend.clientservice.controllers;
 
+import backend.clientservice.models.entities.Client;
 import backend.clientservice.security.TestSecurityConfig;
 import backend.clientservice.services.ClientService;
 import backend.dtos.apiresponse.ApiResponseDto;
 import backend.dtos.client.requests.ClientRequestDto;
 import backend.dtos.client.responses.ClientResponseDto;
+import backend.enums.Gender;
 import backend.utils.Message;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,8 +31,7 @@ import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -46,6 +48,29 @@ class ClientControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Test
+    void testUpdate_whenValidData_returnsClient() throws Exception {
+        ClientResponseDto response = new ClientResponseDto(1L, "Susan", "Chapoñan", LocalDate.of(1994, 9, 22), 31, 'F');
+        ClientRequestDto dto = new ClientRequestDto("Susan", "Chapoñan", LocalDate.of(1994, 9, 22), "F");
+
+        String traceId = getTraceId();
+        ApiResponseDto<ClientResponseDto> apiResponseDto = new ApiResponseDto<>(HttpStatus.CREATED.value(), "Updated client", response, traceId);
+        String json = objectMapper.writeValueAsString(dto);
+
+        when(service.update(any(Long.class), any(ClientRequestDto.class), any(String.class))).thenReturn(apiResponseDto);
+
+        mockMvc.perform(put("/api/clients/{id}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.data.id").value(1L))
+                .andExpect(jsonPath("$.data.name").value("Susan"))
+                .andExpect(jsonPath("$.data.lastName").value("Chapoñan"))
+                .andExpect(jsonPath("$.data.birthDate").value("1994-09-22"))
+                .andExpect(jsonPath("$.data.gender").value("F"))
+                .andExpect(jsonPath("$.data.age").value(31));
+    }
 
     @Test
     void testList_WhenPageDataIsValid_ReturnsClients() throws Exception {
