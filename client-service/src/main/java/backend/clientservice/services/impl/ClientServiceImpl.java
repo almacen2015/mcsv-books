@@ -54,7 +54,7 @@ public class ClientServiceImpl implements ClientService {
 
         logger.info("[{}] response: {}", traceId, response);
 
-        return new ApiResponseDto<>(HttpStatus.OK.value(), Message.CLIENT_UPDATE, response, traceId);
+        return new ApiResponseDto<>(HttpStatus.OK.value(), Message.CLIENT_UPDATE, response, null);
     }
 
     @Override
@@ -69,7 +69,7 @@ public class ClientServiceImpl implements ClientService {
 
         logger.info("[{}] Response: {}", traceId, response);
 
-        return new ApiResponseDto<>(HttpStatus.FOUND.value(), Message.CLIENT_FOUND, response, traceId);
+        return new ApiResponseDto<>(HttpStatus.FOUND.value(), Message.CLIENT_FOUND, response, null);
     }
 
     @Override
@@ -87,7 +87,7 @@ public class ClientServiceImpl implements ClientService {
 
         logger.info("[{}] Clients {}", traceId, data);
 
-        return new ApiResponseDto<>(HttpStatus.OK.value(), Message.OK, new PageImpl<>(data, pageable, clients.getTotalElements()), traceId);
+        return new ApiResponseDto<>(HttpStatus.OK.value(), Message.OK, new PageImpl<>(data, pageable, clients.getTotalElements()), null);
     }
 
     @Override
@@ -103,6 +103,6 @@ public class ClientServiceImpl implements ClientService {
         ClientResponseDto response = mapper.toDto(repository.save(client));
 
         logger.info("[{}] Client: {}", traceId, response);
-        return new ApiResponseDto<>(HttpStatus.CREATED.value(), Message.CLIENT_CREATED, response, traceId);
+        return new ApiResponseDto<>(HttpStatus.CREATED.value(), Message.CLIENT_CREATED, response, null);
     }
 }

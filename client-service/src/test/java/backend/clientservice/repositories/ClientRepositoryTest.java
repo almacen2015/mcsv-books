@@ -11,9 +11,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
@@ -33,6 +33,22 @@ class ClientRepositoryTest {
     @BeforeEach
     void setUp() {
         repository.deleteAll();
+    }
+
+    @Test
+    void testUpdate() {
+        Client client = new Client(null, "Victor", "Orbegozo", LocalDate.of(1994, 4, 5), 30, 'M');
+        Client clientSaved = repository.save(client);
+
+        clientSaved.setName("Maria");
+        clientSaved.setLastName("Rosas");
+        repository.save(clientSaved);
+
+        Optional<Client> updatedClient = repository.findById(clientSaved.getId());
+
+        assertTrue(updatedClient.isPresent());
+        assertEquals("Maria", updatedClient.get().getName());
+        assertEquals("Rosas", updatedClient.get().getLastName());
     }
 
     @Test
