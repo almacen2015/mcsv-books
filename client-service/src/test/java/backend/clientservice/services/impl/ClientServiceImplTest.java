@@ -39,6 +39,37 @@ class ClientServiceImplTest {
     private ClientServiceImpl service;
 
     @Test
+    void testGetById_whenIdNotFound_returnsError() {
+        when(repository.findById(any())).thenReturn(Optional.empty());
+
+        ClientException exception = assertThrows(ClientException.class, () -> service.getById(100L));
+
+        assertEquals(ClientException.CLIENT_NOT_EXISTS, exception.getMessage());
+
+    }
+
+    @Test
+    void testGetById_whenInvalidId_returnsError() {
+        UtilException exception = assertThrows(UtilException.class, () -> service.getById(-1L));
+
+        assertEquals(UtilException.ID_NOT_VALID, exception.getMessage());
+    }
+
+    @Test
+    void testGetById_whenValidId_returnsClient() {
+        Client clientFound = new Client(1L, "Maria", "Rosas", LocalDate.of(1994, 7, 22), 30, Gender.FEMALE.getCode());
+        when(repository.findById(any(Long.class))).thenReturn(Optional.of(clientFound));
+
+        ApiResponseDto<ClientResponseDto> apiResponseDto = service.getById(1L);
+
+        assertThat(apiResponseDto).isNotNull();
+        assertEquals(1L, apiResponseDto.data().id());
+        assertEquals("Maria", apiResponseDto.data().name());
+        assertEquals(LocalDate.of(1994, 7, 22), apiResponseDto.data().birthDate());
+        assertEquals(Gender.FEMALE.getCode(), apiResponseDto.data().gender());
+    }
+
+    @Test
     void testUpdate_whenValidData_returnsClient() {
         Client clientFound = new Client(1L, "Maria", "Rosas", LocalDate.of(1994, 7, 22), 30, Gender.FEMALE.getCode());
         ClientRequestDto request = new ClientRequestDto("Victor", "Orbegozo", "1994-04-05", "M");

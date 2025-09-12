@@ -5,6 +5,7 @@ import backend.clientservice.services.ClientService;
 import backend.dtos.apiresponse.ApiResponseDto;
 import backend.dtos.client.requests.ClientRequestDto;
 import backend.dtos.client.responses.ClientResponseDto;
+import backend.enums.Gender;
 import backend.utils.Message;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -47,11 +48,27 @@ class ClientControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
+    void testGetById_whenValidId_returnsClient() throws Exception {
+        ClientResponseDto response = new ClientResponseDto(1L, "Susan", "Chapoñan", LocalDate.of(1994, 9, 22), 31, Gender.FEMALE.getCode());
+        ApiResponseDto<ClientResponseDto> apiResponseDto = new ApiResponseDto<>(HttpStatus.FOUND.value(), Message.CLIENT_FOUND, response);
+
+        when(service.getById(any(Long.class))).thenReturn(apiResponseDto);
+
+        mockMvc.perform(get("/api/clients/{id}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isFound())
+                .andExpect(jsonPath("$.data.id").value(1L))
+                .andExpect(jsonPath("$.data.name").value("Susan"))
+                .andExpect(jsonPath("$.data.lastName").value("Chapoñan"))
+                .andExpect(jsonPath("$.data.gender").value("F"));
+    }
+
+    @Test
     void testUpdate_whenValidData_returnsClient() throws Exception {
         ClientResponseDto response = new ClientResponseDto(1L, "Susan", "Chapoñan", LocalDate.of(1994, 9, 22), 31, 'F');
         ClientRequestDto dto = new ClientRequestDto("Susan", "Chapoñan", "1994-07-22", "F");
 
-        ApiResponseDto<ClientResponseDto> apiResponseDto = new ApiResponseDto<>(HttpStatus.CREATED.value(), "Updated client", response);
+        ApiResponseDto<ClientResponseDto> apiResponseDto = new ApiResponseDto<>(HttpStatus.CREATED.value(), Message.CLIENT_UPDATE, response);
         String json = objectMapper.writeValueAsString(dto);
 
         when(service.update(any(Long.class), any(ClientRequestDto.class))).thenReturn(apiResponseDto);
