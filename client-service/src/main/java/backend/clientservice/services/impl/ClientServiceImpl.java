@@ -15,6 +15,7 @@ import backend.utils.Utils;
 import jakarta.transaction.Transactional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.slf4j.MDC;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -37,7 +38,9 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public ApiResponseDto<ClientResponseDto> update(Long id, ClientRequestDto dto, String traceId) {
+    public ApiResponseDto<ClientResponseDto> update(Long id, ClientRequestDto dto) {
+        final String traceId = MDC.get("traceId");
+
         logger.info("Iniciando update");
         logger.info("[ {} ] id: {}, client update {}", traceId, id, dto);
 
@@ -58,11 +61,12 @@ public class ClientServiceImpl implements ClientService {
 
         logger.info("[{}] response: {}", traceId, response);
 
-        return new ApiResponseDto<>(HttpStatus.OK.value(), Message.CLIENT_UPDATE, response, null);
+        return new ApiResponseDto<>(HttpStatus.OK.value(), Message.CLIENT_UPDATE, response);
     }
 
     @Override
-    public ApiResponseDto<ClientResponseDto> getById(Long id, String traceId) {
+    public ApiResponseDto<ClientResponseDto> getById(Long id) {
+        final String traceId = MDC.get("traceId");
         logger.info("[{}] Id: {}", traceId, id);
 
         Utils.isValidId(id);
@@ -73,13 +77,11 @@ public class ClientServiceImpl implements ClientService {
 
         logger.info("[{}] Response: {}", traceId, response);
 
-        return new ApiResponseDto<>(HttpStatus.FOUND.value(), Message.CLIENT_FOUND, response, null);
+        return new ApiResponseDto<>(HttpStatus.FOUND.value(), Message.CLIENT_FOUND, response);
     }
 
     @Override
-    public ApiResponseDto<Page<ClientResponseDto>> list(Integer page, Integer size, String orderBy, String traceId) {
-        logger.info("[{}] Data pageable page {}, size {}, orderBy {}", traceId, page, size, orderBy);
-
+    public ApiResponseDto<Page<ClientResponseDto>> list(Integer page, Integer size, String orderBy) {
         PageableCustom pageableCustom = new PageableCustom(page, size, orderBy);
         Utils.validatePagination(pageableCustom);
         Pageable pageable = Utils.constructPageable(pageableCustom);
@@ -89,14 +91,14 @@ public class ClientServiceImpl implements ClientService {
         List<ClientResponseDto> data = clients.getContent().stream()
                 .map(mapper::toDto).toList();
 
-        logger.info("[{}] Clients {}", traceId, data);
-
-        return new ApiResponseDto<>(HttpStatus.OK.value(), Message.OK, new PageImpl<>(data, pageable, clients.getTotalElements()), null);
+        return new ApiResponseDto<>(HttpStatus.OK.value(), Message.OK, new PageImpl<>(data, pageable, clients.getTotalElements()));
     }
 
     @Override
     @Transactional(rollbackOn = Exception.class)
-    public ApiResponseDto<ClientResponseDto> add(ClientRequestDto dto, String traceId) {
+    public ApiResponseDto<ClientResponseDto> add(ClientRequestDto dto) {
+        final String traceId = MDC.get("traceId");
+
         logger.info("[{}] Data client: {}", traceId, dto.toString());
 
         Utils.validateClientDto(dto);
@@ -107,6 +109,6 @@ public class ClientServiceImpl implements ClientService {
         ClientResponseDto response = mapper.toDto(repository.save(client));
 
         logger.info("[{}] Client: {}", traceId, response);
-        return new ApiResponseDto<>(HttpStatus.CREATED.value(), Message.CLIENT_CREATED, response, null);
+        return new ApiResponseDto<>(HttpStatus.CREATED.value(), Message.CLIENT_CREATED, response);
     }
 }

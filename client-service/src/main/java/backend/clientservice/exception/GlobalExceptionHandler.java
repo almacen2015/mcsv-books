@@ -30,7 +30,7 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST :
                 HttpStatus.INTERNAL_SERVER_ERROR;
 
-        ApiResponseDto<Object> response = new ApiResponseDto<>(status.value(), e.getMessage(), null, null);
+        ApiResponseDto<Object> response = new ApiResponseDto<>(status.value(), e.getMessage(), null);
 
         return new ResponseEntity<>(response, status);
     }

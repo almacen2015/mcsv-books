@@ -6,11 +6,11 @@ import backend.dtos.client.responses.ClientResponseDto;
 import org.springframework.data.domain.Page;
 
 public interface ClientService {
-    ApiResponseDto<ClientResponseDto> add(ClientRequestDto dto, String traceId);
+    ApiResponseDto<ClientResponseDto> add(ClientRequestDto dto);
 
-    ApiResponseDto<Page<ClientResponseDto>> list(Integer page, Integer size, String orderBy, String traceId);
+    ApiResponseDto<Page<ClientResponseDto>> list(Integer page, Integer size, String orderBy);
 
-    ApiResponseDto<ClientResponseDto> getById(Long id, String traceId);
+    ApiResponseDto<ClientResponseDto> getById(Long id);
 
-    ApiResponseDto<ClientResponseDto> update(Long id, ClientRequestDto dto, String traceId);
+    ApiResponseDto<ClientResponseDto> update(Long id, ClientRequestDto dto);
 }

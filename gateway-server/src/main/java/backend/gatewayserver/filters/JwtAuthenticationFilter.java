@@ -17,6 +17,8 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Component
 public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
@@ -38,7 +40,8 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
         final String HEADER_AUTHORITIES = "authorities";
         final String HEADER_ROLES = "roles";
         final String HEADER_USER = "user";
-        final String PATH_LOGIN =  "/login";
+        final String PATH_LOGIN = "/login";
+        final String TRACE_ID = "X-Trace-Id";
 
         ServerHttpRequest request = exchange.getRequest();
 
@@ -52,6 +55,9 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
         }
 
         String token = authHeader.substring(7);
+        String traceId = request.getHeaders().getFirst(TRACE_ID);
+        traceId = traceId == null ? UUID.randomUUID().toString() : traceId;
+
         try {
             Algorithm algorithm = Algorithm.HMAC256(secretKey);
             JWTVerifier verifier = JWT.require(algorithm).build();
@@ -62,6 +68,7 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
                     .mutate()
                     .header(HttpHeaders.AUTHORIZATION, HEADER_BEARER_WITH_SPACE + token)
                     .header(HEADER_ROLES, roles)
+                    .header(TRACE_ID, traceId)
                     .header(HEADER_USER, decodedJWT.getSubject())
                     .build();
 

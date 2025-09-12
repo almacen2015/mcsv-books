@@ -4,10 +4,11 @@ import backend.clientservice.services.ClientService;
 import backend.dtos.apiresponse.ApiResponseDto;
 import backend.dtos.client.requests.ClientRequestDto;
 import backend.dtos.client.responses.ClientResponseDto;
-import backend.utils.Utils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import org.slf4j.MDC;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/clients")
+@SecurityRequirement(name = "BearerAuth")
 public class ClientController {
 
     private final ClientService service;
@@ -32,9 +34,8 @@ public class ClientController {
     })
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponseDto<ClientResponseDto>> update(@PathVariable Long id, @RequestBody ClientRequestDto request) {
-        final String traceId = Utils.generateTraceId();
-        final ApiResponseDto<ClientResponseDto> response = service.update(id, request, traceId);
-        final HttpHeaders headers = createHeader(traceId);
+        final ApiResponseDto<ClientResponseDto> response = service.update(id, request);
+        final HttpHeaders headers = createHeader();
         return new ResponseEntity<>(response, headers, response.code());
     }
 
@@ -48,11 +49,8 @@ public class ClientController {
     })
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponseDto<ClientResponseDto>> getById(@PathVariable Long id) {
-        final String traceId = Utils.generateTraceId();
-        final ApiResponseDto<ClientResponseDto> response = service.getById(id, traceId);
-
-        final HttpHeaders headers = createHeader(traceId);
-
+        final ApiResponseDto<ClientResponseDto> response = service.getById(id);
+        final HttpHeaders headers = createHeader();
         return new ResponseEntity<>(response, headers, response.code());
     }
 
@@ -67,11 +65,8 @@ public class ClientController {
     public ResponseEntity<ApiResponseDto<Page<ClientResponseDto>>> list(@RequestParam Integer page,
                                                                         @RequestParam Integer size,
                                                                         @RequestParam String orderBy) {
-        final String traceId = Utils.generateTraceId();
-        final ApiResponseDto<Page<ClientResponseDto>> response = service.list(page, size, orderBy, traceId);
-
-        final HttpHeaders headers = createHeader(traceId);
-
+        final ApiResponseDto<Page<ClientResponseDto>> response = service.list(page, size, orderBy);
+        final HttpHeaders headers = createHeader();
         return new ResponseEntity<>(response, headers, response.code());
     }
 
@@ -84,17 +79,14 @@ public class ClientController {
     })
     @PostMapping
     public ResponseEntity<ApiResponseDto<ClientResponseDto>> add(@RequestBody ClientRequestDto dto) {
-        final String traceId = Utils.generateTraceId();
-        final ApiResponseDto<ClientResponseDto> response = service.add(dto, traceId);
-
-        final HttpHeaders headers = createHeader(traceId);
-
+        final ApiResponseDto<ClientResponseDto> response = service.add(dto);
+        final HttpHeaders headers = createHeader();
         return new ResponseEntity<>(response, headers, response.code());
     }
 
-    private HttpHeaders createHeader(String traceId) {
+    private HttpHeaders createHeader() {
         HttpHeaders headers = new HttpHeaders();
-        headers.set("X-Trace-Id", traceId);
+        headers.set("X-Trace-Id", MDC.get("traceId"));
         return headers;
     }
 }

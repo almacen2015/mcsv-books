@@ -4,6 +4,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.MDC;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,6 +26,11 @@ public class JwtFilter extends OncePerRequestFilter {
 
         final String user = request.getHeader("user");
         final String roles = request.getHeader("roles");
+        final String traceId = request.getHeader("X-Trace-Id");
+
+        if (traceId != null) {
+            MDC.put("traceId", traceId);
+        }
 
         if (user != null && roles != null) {
             Collection<? extends GrantedAuthority> authorities = AuthorityUtils.commaSeparatedStringToAuthorityList(roles);
@@ -33,7 +39,10 @@ public class JwtFilter extends OncePerRequestFilter {
             context.setAuthentication(authentication);
             SecurityContextHolder.setContext(context);
         }
-
-        filterChain.doFilter(request, response);
+        try {
+            filterChain.doFilter(request, response);
+        } finally {
+            MDC.remove("traceId");
+        }
     }
 }
