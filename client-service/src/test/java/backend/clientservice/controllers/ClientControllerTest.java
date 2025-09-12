@@ -51,11 +51,10 @@ class ClientControllerTest {
         ClientResponseDto response = new ClientResponseDto(1L, "Susan", "Chapoñan", LocalDate.of(1994, 9, 22), 31, 'F');
         ClientRequestDto dto = new ClientRequestDto("Susan", "Chapoñan", "1994-07-22", "F");
 
-        String traceId = getTraceId();
-        ApiResponseDto<ClientResponseDto> apiResponseDto = new ApiResponseDto<>(HttpStatus.CREATED.value(), "Updated client", response, traceId);
+        ApiResponseDto<ClientResponseDto> apiResponseDto = new ApiResponseDto<>(HttpStatus.CREATED.value(), "Updated client", response);
         String json = objectMapper.writeValueAsString(dto);
 
-        when(service.update(any(Long.class), any(ClientRequestDto.class), any(String.class))).thenReturn(apiResponseDto);
+        when(service.update(any(Long.class), any(ClientRequestDto.class))).thenReturn(apiResponseDto);
 
         mockMvc.perform(put("/api/clients/{id}", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -76,12 +75,11 @@ class ClientControllerTest {
         ClientResponseDto client3 = new ClientResponseDto(3L, "Susan", "Bonita", LocalDate.of(1994, 4, 5), 29, 'F');
         List<ClientResponseDto> clients = List.of(client1, client2, client3);
 
-        String traceId = getTraceId();
         Pageable pageable = PageRequest.of(1, 5);
 
-        ApiResponseDto<Page<ClientResponseDto>> response = new ApiResponseDto<>(HttpStatus.OK.value(), Message.OK, new PageImpl<>(clients, pageable, clients.size()), traceId);
+        ApiResponseDto<Page<ClientResponseDto>> response = new ApiResponseDto<>(HttpStatus.OK.value(), Message.OK, new PageImpl<>(clients, pageable, clients.size()));
 
-        when(service.list(any(Integer.class), any(Integer.class), any(String.class), any(String.class))).thenReturn(response);
+        when(service.list(any(Integer.class), any(Integer.class), any(String.class))).thenReturn(response);
 
         mockMvc.perform(get("/api/clients")
                         .param("page", "1")
@@ -102,11 +100,11 @@ class ClientControllerTest {
 
         ClientRequestDto request = new ClientRequestDto("Victor", "Orbegozo", "1994-04-05", "M");
         ClientResponseDto response = new ClientResponseDto(1L, "Victor", "Orbegozo", LocalDate.of(1994, 4, 5), 30, 'M');
-        ApiResponseDto<ClientResponseDto> apiResponseDto = new ApiResponseDto<>(HttpStatus.CREATED.value(), "Cliente created", response, traceId);
+        ApiResponseDto<ClientResponseDto> apiResponseDto = new ApiResponseDto<>(HttpStatus.CREATED.value(), "Cliente created", response);
 
         String json = objectMapper.writeValueAsString(request);
 
-        when(service.add(any(ClientRequestDto.class), any(String.class))).thenReturn(apiResponseDto);
+        when(service.add(any(ClientRequestDto.class))).thenReturn(apiResponseDto);
 
         mockMvc.perform(post("/api/clients")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -118,9 +116,5 @@ class ClientControllerTest {
                 .andExpect(jsonPath("$.data.birthDate").value("1994-04-05"))
                 .andExpect(jsonPath("$.data.gender").value("M"))
                 .andExpect(jsonPath("$.data.age").value(30));
-    }
-
-    private String getTraceId() {
-        return UUID.randomUUID().toString();
     }
 }

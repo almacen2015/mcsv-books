@@ -36,6 +36,17 @@ class ClientRepositoryTest {
     }
 
     @Test
+    void testFindById() {
+        Client client = new Client(null, "Victor", "Orbegozo", LocalDate.of(1994, 4, 5), 30, 'M');
+        Client clientSaved = repository.save(client);
+
+        Optional<Client> clientFound = repository.findById(clientSaved.getId());
+
+        assertTrue(clientFound.isPresent());
+        assertEquals(clientSaved, clientFound.get());
+    }
+
+    @Test
     void testUpdate() {
         Client client = new Client(null, "Victor", "Orbegozo", LocalDate.of(1994, 4, 5), 30, 'M');
         Client clientSaved = repository.save(client);
