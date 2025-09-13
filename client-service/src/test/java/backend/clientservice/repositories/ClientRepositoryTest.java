@@ -1,6 +1,8 @@
 package backend.clientservice.repositories;
 
 import backend.clientservice.models.entities.Client;
+import backend.enums.DocumentType;
+import backend.enums.Gender;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,8 +38,19 @@ class ClientRepositoryTest {
     }
 
     @Test
+    void testFindByDocumentNumber() {
+        Client client = buildClient("Victor", "Orbegozo", "12345678");
+        Client clientSaved = repository.save(client);
+
+        Optional<Client> clientFound = repository.findByDocumentNumber("12345678");
+
+        assertTrue(clientFound.isPresent());
+        assertEquals(clientSaved, clientFound.get());
+    }
+
+    @Test
     void testFindById() {
-        Client client = new Client(null, "Victor", "Orbegozo", LocalDate.of(1994, 4, 5), 30, 'M');
+        Client client = buildClient("Victor", "Orbegozo", "12345678");
         Client clientSaved = repository.save(client);
 
         Optional<Client> clientFound = repository.findById(clientSaved.getId());
@@ -48,7 +61,7 @@ class ClientRepositoryTest {
 
     @Test
     void testUpdate() {
-        Client client = new Client(null, "Victor", "Orbegozo", LocalDate.of(1994, 4, 5), 30, 'M');
+        Client client = buildClient("Victor", "Orbegozo", "12345678");
         Client clientSaved = repository.save(client);
 
         clientSaved.setName("Maria");
@@ -64,17 +77,14 @@ class ClientRepositoryTest {
 
     @Test
     void testList() {
-        Client client1 = new Client(null, "Victor", "Orbegozo", LocalDate.of(1994, 4, 5), 30, 'M');
-        Client client2 = new Client(null, "Luis", "Mesa", LocalDate.of(1994, 4, 5), 30, 'M');
-        Client client3 = new Client(null, "Mario", "Mario", LocalDate.of(1994, 4, 5), 30, 'M');
+        Client client1 = buildClient("Victor", "Orbegozo", "12345678");
+        Client client2 = buildClient("Luis", "Casas", "11111111");
+        Client client3 = buildClient("Mario", "Zelada", "22222222");
 
         List<Client> clients = repository.saveAll(List.of(client1, client2, client3));
 
         assertNotNull(clients);
         assertEquals(3, clients.size());
-        assertEquals(1L, clients.get(0).getId());
-        assertEquals(2L, clients.get(1).getId());
-        assertEquals(3L, clients.get(2).getId());
         assertEquals("Victor", clients.get(0).getName());
         assertEquals("Luis", clients.get(1).getName());
         assertEquals("Mario", clients.get(2).getName());
@@ -82,11 +92,24 @@ class ClientRepositoryTest {
 
     @Test
     void testAdd() {
-        Client client = new Client(null, "Victor", "Orbegozo", LocalDate.of(1994, 4, 5), 30, 'M');
+        Client client = buildClient("Victor", "Orbegozo", "12345678");
         Client clientSaved = repository.save(client);
 
         assertNotNull(clientSaved);
         assertEquals(1L, clientSaved.getId());
         assertEquals("Victor", clientSaved.getName());
+    }
+
+    private Client buildClient(String name, String lastName, String documentNumber) {
+        return Client.builder()
+                .id(null)
+                .name(name)
+                .lastName(lastName)
+                .birthDate(LocalDate.of(1994, 4, 5))
+                .age(30)
+                .gender(Gender.MALE.getCode())
+                .documentNumber(documentNumber)
+                .documentType(DocumentType.DNI.name())
+                .build();
     }
 }

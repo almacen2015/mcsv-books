@@ -1,6 +1,6 @@
 <configuration>
     <!-- Define una variable para el nombre del microservicio -->
-    <property name="LOG_FILE" value="logs/client-service/clients.log"/>
+    <property name="LOG_FILE" value="logs/clients/clients.log"/>
 
     <!-- Appender para la consola -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
@@ -13,7 +13,7 @@
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_FILE}</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/client-service/clients-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>logs/clients/clients-%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>10</maxHistory>
         </rollingPolicy>
         <encoder>
