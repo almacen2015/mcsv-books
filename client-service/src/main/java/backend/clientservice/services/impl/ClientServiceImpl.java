@@ -15,7 +15,6 @@ import backend.utils.Utils;
 import jakarta.transaction.Transactional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.slf4j.MDC;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -38,11 +37,28 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public ApiResponseDto<ClientResponseDto> update(Long id, ClientRequestDto dto) {
-        final String traceId = MDC.get("traceId");
+    public ApiResponseDto<ClientResponseDto> getByDocumentNumber(String documentNumber, String documentType) {
+        logger.info("getByDocumentNumber documentNumber: {} , documentType: {}", documentNumber, documentType);
 
-        logger.info("Iniciando update");
-        logger.info("[ {} ] id: {}, client update {}", traceId, id, dto);
+        if (Utils.isInvalidString(documentNumber)) {
+            throw new ClientException(ClientException.ERROR_DOCUMENT_NUMBER);
+        }
+        Utils.validateDocumentNumber(documentNumber, documentType);
+
+        Client clientFound = repository.findByDocumentNumber(documentNumber).orElseThrow(() -> new ClientException(ClientException.ERROR_DOCUMENT_NUMBER));
+
+        ClientResponseDto clientResponseDto = mapper.toDto(clientFound);
+
+        ApiResponseDto<ClientResponseDto> response = new ApiResponseDto<>(HttpStatus.FOUND.value(), Message.CLIENT_FOUND, clientResponseDto);
+
+        logger.info("getByDocumentNumber response: {}", response);
+
+        return response;
+    }
+
+    @Override
+    public ApiResponseDto<ClientResponseDto> update(Long id, ClientRequestDto dto) {
+        logger.info("update id: {}, client update {}", id, dto);
 
         Utils.isValidId(id);
         Utils.validateClientDto(dto);
@@ -56,18 +72,19 @@ public class ClientServiceImpl implements ClientService {
         LocalDate date = Utils.toLocalDate(dto.birthDate());
         clientFound.setBirthDate(date);
         clientFound.setAge(Utils.getAge(date));
+        clientFound.setDocumentNumber(dto.documentNumber());
+        clientFound.setDocumentType(dto.documentType());
 
         ClientResponseDto response = mapper.toDto(repository.save(clientFound));
 
-        logger.info("[{}] response: {}", traceId, response);
+        logger.info("update response: {}", response);
 
         return new ApiResponseDto<>(HttpStatus.OK.value(), Message.CLIENT_UPDATE, response);
     }
 
     @Override
     public ApiResponseDto<ClientResponseDto> getById(Long id) {
-        final String traceId = MDC.get("traceId");
-        logger.info("[{}] Id: {}", traceId, id);
+        logger.info("getById Id: {}", id);
 
         Utils.isValidId(id);
 
@@ -75,7 +92,7 @@ public class ClientServiceImpl implements ClientService {
 
         ClientResponseDto response = mapper.toDto(clientFound);
 
-        logger.info("[{}] Response: {}", traceId, response);
+        logger.info("getById response: {}", response);
 
         return new ApiResponseDto<>(HttpStatus.FOUND.value(), Message.CLIENT_FOUND, response);
     }
@@ -97,9 +114,7 @@ public class ClientServiceImpl implements ClientService {
     @Override
     @Transactional(rollbackOn = Exception.class)
     public ApiResponseDto<ClientResponseDto> add(ClientRequestDto dto) {
-        final String traceId = MDC.get("traceId");
-
-        logger.info("[{}] Data client: {}", traceId, dto.toString());
+        logger.info("Add data client: {}", dto.toString());
 
         Utils.validateClientDto(dto);
 
@@ -108,7 +123,7 @@ public class ClientServiceImpl implements ClientService {
 
         ClientResponseDto response = mapper.toDto(repository.save(client));
 
-        logger.info("[{}] Client: {}", traceId, response);
+        logger.info("Add response: {}", response);
         return new ApiResponseDto<>(HttpStatus.CREATED.value(), Message.CLIENT_CREATED, response);
     }
 }

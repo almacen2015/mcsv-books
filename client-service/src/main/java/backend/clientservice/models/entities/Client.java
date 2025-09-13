@@ -22,4 +22,6 @@ public class Client {
     private LocalDate birthDate;
     private Integer age;
     private char gender;
+    private String documentNumber;
+    private String documentType;
 }

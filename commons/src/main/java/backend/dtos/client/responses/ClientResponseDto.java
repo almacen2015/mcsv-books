@@ -7,5 +7,7 @@ public record ClientResponseDto(Long id,
                                 String lastName,
                                 LocalDate birthDate,
                                 Integer age,
-                                char gender) {
+                                char gender,
+                                String documentNumber,
+                                String documentType) {
 }

@@ -19,7 +19,10 @@ public class GlobalExceptionHandler {
             ClientException.ERROR_LASTNAME,
             ClientException.ERROR_GENDER,
             ClientException.ERROR_BIRTHDATE,
-            ClientException.CLIENT_NOT_EXISTS
+            ClientException.CLIENT_NOT_EXISTS,
+            ClientException.ERROR_DOCUMENT_NUMBER,
+            ClientException.ERROR_DNI,
+            ClientException.ERROR_CE
     );
 
     @ExceptionHandler(ClientException.class)

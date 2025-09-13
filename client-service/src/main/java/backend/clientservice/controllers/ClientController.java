@@ -25,6 +25,21 @@ public class ClientController {
         this.service = service;
     }
 
+    @Operation(summary = "Get a client by documentNumber", description = "Get a client by documentNumber")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Client saved"),
+            @ApiResponse(responseCode = "400", description = "Invalid data"),
+            @ApiResponse(responseCode = "401", description = "No authorized"),
+            @ApiResponse(responseCode = "500", description = "Internal Error")
+    })
+    @GetMapping("/document")
+    public ResponseEntity<ApiResponseDto<ClientResponseDto>> getByDocumentNumber(@RequestParam String documentNumber,
+                                                                                 @RequestParam String documentType) {
+        final ApiResponseDto<ClientResponseDto> response = service.getByDocumentNumber(documentNumber, documentType);
+        final HttpHeaders headers = createHeader();
+        return new ResponseEntity<>(response, headers, response.code());
+    }
+
     @Operation(summary = "Update a client", description = "Update a client")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Client saved"),

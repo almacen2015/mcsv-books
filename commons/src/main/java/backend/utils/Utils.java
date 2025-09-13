@@ -2,6 +2,7 @@ package backend.utils;
 
 import backend.dtos.client.requests.ClientRequestDto;
 import backend.dtos.pageable.PageableCustom;
+import backend.enums.DocumentType;
 import backend.enums.Gender;
 import backend.exceptions.UtilException;
 import backend.exceptions.client.ClientException;
@@ -13,20 +14,42 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.UUID;
+import java.util.Objects;
 
 public class Utils {
 
+    public static void validateDocumentNumber(String documentNumber, String documentType) {
+        if (Objects.equals(documentType, DocumentType.DNI.name())) {
+            validateDni(documentNumber);
+        }
+
+        if (Objects.equals(documentType, DocumentType.CE.name())) {
+            validateCe(documentNumber);
+        }
+    }
+
+    public static void validateDni(String documentNumber) {
+        if (documentNumber.length() != 8) {
+            throw new ClientException(ClientException.ERROR_DNI);
+        }
+    }
+
+    public static void validateCe(String documentNumber) {
+        if (documentNumber.length() != 9) {
+            throw new ClientException(ClientException.ERROR_DNI);
+        }
+    }
+
     public static void validateClientDto(ClientRequestDto dto) {
-        if (isStringValid(dto.name())) {
+        if (isInvalidString(dto.name())) {
             throw new ClientException(ClientException.ERROR_NAME);
         }
 
-        if (isStringValid(dto.lastName())) {
+        if (isInvalidString(dto.lastName())) {
             throw new ClientException(ClientException.ERROR_LASTNAME);
         }
 
-        if (isStringValid(dto.gender()) || dto.gender().length() != 1
+        if (isInvalidString(dto.gender()) || dto.gender().length() != 1
                 || !isValidGender(dto.gender())) {
             throw new ClientException(ClientException.ERROR_GENDER);
         }
@@ -47,7 +70,7 @@ public class Utils {
             throw new PageException(PageException.SIZE_NUMBER_INVALID);
         }
 
-        if (isStringValid(paginado.orderBy())) {
+        if (isInvalidString(paginado.orderBy())) {
             throw new PageException(PageException.SORT_NAME_INVALID);
         }
     }
@@ -93,11 +116,7 @@ public class Utils {
         }
     }
 
-    public static boolean isStringValid(String string) {
+    public static boolean isInvalidString(String string) {
         return string == null || string.isBlank();
-    }
-
-    public static String generateTraceId() {
-        return UUID.randomUUID().toString();
     }
 }
