@@ -48,6 +48,24 @@ class ClientControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
+    void testGetByDocumentNumber_whenDocumentNumberIsValid_returnsClient() throws Exception {
+        ClientResponseDto response = buildResponse(1L, "Susan", "Chapoñan", LocalDate.of(1994, 9, 22), 31, Gender.FEMALE.getCode(), "12345678", "DNI");
+        ApiResponseDto<ClientResponseDto> apiResponseDto = new ApiResponseDto<>(HttpStatus.FOUND.value(), Message.CLIENT_FOUND, response);
+
+        when(service.getByDocumentNumber(any(String.class), any(String.class))).thenReturn(apiResponseDto);
+
+        mockMvc.perform(get("/api/clients/document")
+                        .param("documentNumber", "12345678")
+                        .param("documentType", "DNI")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isFound())
+                .andExpect(jsonPath("$.data.id").value(1L))
+                .andExpect(jsonPath("$.data.name").value("Susan"))
+                .andExpect(jsonPath("$.data.lastName").value("Chapoñan"))
+                .andExpect(jsonPath("$.data.gender").value("F"));
+    }
+
+    @Test
     void testGetById_whenValidId_returnsClient() throws Exception {
         ClientResponseDto response = buildResponse(1L, "Susan", "Chapoñan", LocalDate.of(1994, 9, 22), 31, Gender.FEMALE.getCode(), "12345678", "DNI");
         ApiResponseDto<ClientResponseDto> apiResponseDto = new ApiResponseDto<>(HttpStatus.FOUND.value(), Message.CLIENT_FOUND, response);

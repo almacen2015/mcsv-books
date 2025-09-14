@@ -1,27 +1,27 @@
 <configuration>
-    <!-- Define una variable para el nombre del microservicio -->
-    <property name="LOG_FILE" value="../logs/clients/clients.log"/>
+    <!-- Carpeta de logs común en microservicio-books/logs -->
+    <property name="LOG_PATH" value="../logs/client-service"/>
+    <property name="LOG_FILE" value="${LOG_PATH}/clients.log"/>
 
-    <!-- Appender para la consola -->
+    <!-- Appender consola -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss} [%X{traceId}] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
-    <!-- Appender para escribir en archivo -->
+    <!-- Appender archivo -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_FILE}</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/clients/clients-%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>10</maxHistory>
+            <fileNamePattern>${LOG_PATH}/clients-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>1</maxHistory>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
         </rollingPolicy>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss} [%X{traceId}] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
-    <!-- Configuración general -->
     <root level="info">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
