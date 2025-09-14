@@ -40,6 +40,42 @@ class ClientServiceImplTest {
     private ClientServiceImpl service;
 
     @Test
+    void testGetByDocumentNumber_whenDocumentTypeIsInvalid_returnsError() {
+        ClientException exception = assertThrows(ClientException.class, () -> service.getByDocumentNumber("12345678", "AA"));
+
+        assertThat(exception.getMessage()).isEqualTo(ClientException.ERROR_DOCUMENT_TYPE);
+    }
+
+    @Test
+    void testGetByDocumentNumber_whenCeHasNotNineDigits_returnsError() {
+        ClientException exception = assertThrows(ClientException.class, () -> service.getByDocumentNumber("1234567", "CE"));
+
+        assertThat(exception.getMessage()).isEqualTo(ClientException.ERROR_CE);
+    }
+
+    @Test
+    void testGetByDocumentNumber_whenDniHasNotEightDigits_returnsError() {
+        ClientException exception = assertThrows(ClientException.class, () -> service.getByDocumentNumber("1234567", "DNI"));
+
+        assertThat(exception.getMessage()).isEqualTo(ClientException.ERROR_DNI);
+    }
+
+    @Test
+    void testGetByDocumentNumber_whenValidDocumentNumber_returnsClient() {
+        Client clientFound = buildClient(1L, "Victor", "Orbegozo", LocalDate.of(1994, 4, 5), 31, Gender.MALE, "12345678");
+        when(repository.findByDocumentNumber(any(String.class))).thenReturn(Optional.of(clientFound));
+
+        ApiResponseDto<ClientResponseDto> response = service.getByDocumentNumber("12345678", "DNI");
+
+        assertThat(response).isNotNull();
+        assertEquals(1L, response.data().id());
+        assertEquals("Victor", response.data().name());
+        assertEquals("Orbegozo", response.data().lastName());
+        assertEquals("12345678", response.data().documentNumber());
+        assertEquals(LocalDate.of(1994, 4, 5), response.data().birthDate());
+    }
+
+    @Test
     void testGetById_whenIdNotFound_returnsError() {
         when(repository.findById(any())).thenReturn(Optional.empty());
 

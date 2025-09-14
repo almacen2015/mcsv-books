@@ -10,6 +10,7 @@ public class ClientException extends RuntimeException {
     public static final String ERROR_DOCUMENT_NUMBER = "Document number is required";
     public static final String ERROR_DNI = "DNI must have 8 digits";
     public static final String ERROR_CE = "CE must have 9 digits";
+    public static final String ERROR_DOCUMENT_TYPE = "Invalid Document Type";
 
     public ClientException(String message) {
         super(message);

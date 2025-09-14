@@ -14,17 +14,28 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Arrays;
 import java.util.Objects;
 
 public class Utils {
 
     public static void validateDocumentNumber(String documentNumber, String documentType) {
+        validateDocumentType(documentType);
+
         if (Objects.equals(documentType, DocumentType.DNI.name())) {
             validateDni(documentNumber);
         }
 
         if (Objects.equals(documentType, DocumentType.CE.name())) {
             validateCe(documentNumber);
+        }
+    }
+
+    public static void validateDocumentType(String documentType) {
+        boolean exists = Arrays.stream(DocumentType.values())
+                .anyMatch(dt -> Objects.equals(dt.name(), documentType));
+        if (!exists) {
+            throw new ClientException(ClientException.ERROR_DOCUMENT_TYPE);
         }
     }
 
@@ -36,7 +47,7 @@ public class Utils {
 
     public static void validateCe(String documentNumber) {
         if (documentNumber.length() != 9) {
-            throw new ClientException(ClientException.ERROR_DNI);
+            throw new ClientException(ClientException.ERROR_CE);
         }
     }
 
