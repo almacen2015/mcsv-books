@@ -11,6 +11,11 @@ spring:
           uri: lb://auth-service
           predicates:
             - Path=/api/auth/**
+
+        - id: rooms-service
+          uri: lb://room-service
+          predicates:
+            - Path=/api/rooms/**
 security:
   jwt:
     key:
