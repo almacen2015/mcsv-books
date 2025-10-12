@@ -9,7 +9,7 @@ import org.mapstruct.factory.Mappers;
 
 @Mapper
 public interface RoomMapper {
-    RoomMapper MAPPER = Mappers.getMapper(RoomMapper.class);
+    RoomMapper INSTANCE = Mappers.getMapper(RoomMapper.class);
 
     @Mapping(target = "id", ignore = true)
     Room toEntity(RoomRequestDto dto);

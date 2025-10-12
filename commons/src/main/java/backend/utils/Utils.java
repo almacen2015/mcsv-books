@@ -2,6 +2,7 @@ package backend.utils;
 
 import backend.dtos.client.requests.ClientRequestDto;
 import backend.dtos.pageable.PageableCustom;
+import backend.dtos.room.request.RoomRequestDto;
 import backend.enums.DocumentType;
 import backend.enums.Gender;
 import backend.exceptions.UtilException;
@@ -18,6 +19,9 @@ import java.util.Arrays;
 import java.util.Objects;
 
 public class Utils {
+
+    public static void validateRoomDto(RoomRequestDto dto) {
+    }
 
     public static void validateDocumentNumber(String documentNumber, String documentType) {
         validateDocumentType(documentType);
