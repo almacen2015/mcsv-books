@@ -8,6 +8,7 @@ import backend.enums.Gender;
 import backend.exceptions.UtilException;
 import backend.exceptions.client.ClientException;
 import backend.exceptions.page.PageException;
+import backend.exceptions.room.RoomException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
@@ -21,6 +22,41 @@ import java.util.Objects;
 public class Utils {
 
     public static void validateRoomDto(RoomRequestDto dto) {
+        if (isInvalidString(dto.number())) {
+            throw new RoomException(RoomException.ERROR_NUMBER);
+        }
+
+        if (!onlyNumbers(dto.number())) {
+            throw new RoomException(RoomException.ERROR_NUMBER);
+        }
+
+        if (isInvalidString(dto.description())) {
+            throw new RoomException(RoomException.ERROR_DESCRIPTION);
+        }
+
+        if (!isValidPrice(dto.price())) {
+            throw new RoomException(RoomException.ERROR_PRICE);
+        }
+
+        if (isNotPositive(dto.capacity())) {
+            throw new RoomException(RoomException.ERROR_CAPACITY);
+        }
+
+        if (isInvalidString(dto.roomStatus())) {
+            throw new RoomException(RoomException.ERROR_STATUS);
+        }
+
+        if (isInvalidString(dto.roomType())) {
+            throw new RoomException(RoomException.ERROR_TYPE);
+        }
+    }
+
+    public static boolean onlyNumbers(String texto) {
+        return texto != null && texto.matches("\\d+");
+    }
+
+    public static boolean isValidPrice(Double price) {
+        return price != null && price > 0;
     }
 
     public static void validateDocumentNumber(String documentNumber, String documentType) {
