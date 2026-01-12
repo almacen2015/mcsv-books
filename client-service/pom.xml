@@ -8,7 +8,6 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>client-service</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
     <name>client-service</name>
     <description>client-service</description>
     <url/>

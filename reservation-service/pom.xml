@@ -8,7 +8,6 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>reservation-service</artifactId>
-    <version>1.0.0.-SNAPSHOT</version>
     <name>reservation-service</name>
     <description>reservation-service</description>
     <url/>
