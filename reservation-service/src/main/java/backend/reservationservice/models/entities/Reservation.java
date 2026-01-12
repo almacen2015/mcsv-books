@@ -2,10 +2,8 @@ package backend.reservationservice.models.entities;
 
 import backend.enums.ReservationStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -16,10 +14,7 @@ import java.time.LocalDateTime;
                 @Index(name = "idx_reservation_room", columnList = "room_id"),
                 @Index(name = "idx_reservation_status", columnList = "status")
         })
-@Builder
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
 public class Reservation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,6 +41,17 @@ public class Reservation {
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    protected Reservation() {}
+
+    public Reservation(Long roomId, Long clientId, LocalDate startDate, LocalDate endDate) {
+        this.roomId = roomId;
+        this.clientId = clientId;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.status = ReservationStatus.PAYMENT_PENDING;
+        this.createdAt = LocalDateTime.now();
+    }
 
     public void confirm() {
         if (this.status != ReservationStatus.PAYMENT_PENDING) {
