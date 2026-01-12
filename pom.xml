@@ -23,6 +23,7 @@
         <module>gateway-server</module>
         <module>auth-service</module>
         <module>room-service</module>
+        <module>reservation-service</module>
     </modules>
 
     <properties>
