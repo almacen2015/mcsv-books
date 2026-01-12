@@ -46,4 +46,25 @@ public class Reservation {
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    public void confirm() {
+        if (this.status != ReservationStatus.PAYMENT_PENDING) {
+            throw new IllegalStateException("Only reservations in PAYMENT_PENDING can be confirmed");
+        }
+        this.status = ReservationStatus.CONFIRMED;
+    }
+
+    public void cancel() {
+        if (this.status != ReservationStatus.PAYMENT_PENDING) {
+            throw new IllegalStateException("Only reservations in PAYMENT_PENDING can be cancelled");
+        }
+        this.status = ReservationStatus.CANCELLED;
+    }
+
+    public void expire() {
+        if (this.status != ReservationStatus.PAYMENT_PENDING) {
+            throw new IllegalStateException("Only reservations in PAYMENT_PENDING can be expired");
+        }
+        this.status = ReservationStatus.EXPIRED;
+    }
 }
