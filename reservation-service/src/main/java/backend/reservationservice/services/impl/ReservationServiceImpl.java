@@ -35,4 +35,28 @@ public class ReservationServiceImpl {
 
         return repository.save(reservation);
     }
+
+    @Transactional
+    public void confirm(Long id) {
+        Reservation reservation = repository.findById(id)
+                .orElseThrow(() -> new ReservationException(ReservationException.RESERVATION_NOT_FOUND));
+
+        reservation.confirm();
+    }
+
+    @Transactional
+    public void cancel(Long id) {
+        Reservation reservation = repository.findById(id)
+                .orElseThrow(() -> new ReservationException(ReservationException.RESERVATION_NOT_FOUND));
+
+        reservation.cancel();
+    }
+
+    @Transactional
+    public void expire(Long id) {
+        Reservation reservation = repository.findById(id)
+                .orElseThrow(() -> new ReservationException(ReservationException.RESERVATION_NOT_FOUND));
+
+        reservation.expire();
+    }
 }
