@@ -1,6 +1,6 @@
 package backend.reservationservice.models.mapper;
 
-import backend.dtos.reservation.requests.ReservationRequestDto;
+import backend.dtos.reservation.requests.CreateReservationRequest;
 import backend.reservationservice.models.entities.Reservation;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -14,5 +14,5 @@ public interface ReservationMapper {
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "paymentId", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
-    Reservation toEntity(ReservationRequestDto dto);
+    Reservation toEntity(CreateReservationRequest dto);
 }
