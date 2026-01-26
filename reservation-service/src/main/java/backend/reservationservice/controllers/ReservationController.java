@@ -7,6 +7,7 @@ import backend.reservationservice.models.entities.Reservation;
 import backend.reservationservice.models.mapper.ReservationMapper;
 import backend.reservationservice.services.impl.ReservationServiceImpl;
 import backend.utils.Message;
+import jakarta.validation.Valid;
 import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -34,7 +35,7 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponseDto<ReservationResponseDto>> createReservation(@RequestBody CreateReservationRequest request){
+    public ResponseEntity<ApiResponseDto<ReservationResponseDto>> createReservation(@Valid @RequestBody CreateReservationRequest request){
         Reservation reservation = mapper.toEntity(request);
         Reservation reservationCreated = service.create(reservation);
         ReservationResponseDto response = mapper.toResponse(reservationCreated);
