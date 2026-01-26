@@ -1,11 +1,14 @@
 package backend.dtos.reservation.responses;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 public record ReservationResponseDto(Long id,
                                      Long roomId,
                                      Long clientId,
-                                     String startDate,
-                                     String endDate,
+                                     LocalDate startDate,
+                                     LocalDate endDate,
                                      String status,
                                      Long paymentId,
-                                     String createdAt) {
+                                     LocalDateTime createdAt) {
 }
