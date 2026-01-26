@@ -9,5 +9,9 @@ public class Message {
 
     public static final String ROOM_CREATED = "Room created";
 
+    public static final String RESERVATION_CREATED = "Reservation created";
+
+
+
 
 }
