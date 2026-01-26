@@ -21,17 +21,15 @@ public class ReservationServiceImpl {
     }
 
     @Transactional
-    public Reservation create(Long roomId, Long clientId, LocalDate startDate, LocalDate endDate) {
-        boolean conflict = repository.existsOverlappingReservation(roomId,
+    public Reservation create(Reservation reservation) {
+        boolean conflict = repository.existsOverlappingReservation(reservation.getRoomId(),
                 List.of(ReservationStatus.PAYMENT_PENDING, ReservationStatus.CONFIRMED),
-                startDate,
-                endDate);
+                reservation.getStartDate(),
+                reservation.getEndDate());
 
         if (conflict) {
             throw new ReservationException(ReservationException.ROOM_NOT_AVAILABLE);
         }
-
-        Reservation reservation = new Reservation(roomId, clientId, startDate, endDate);
 
         return repository.save(reservation);
     }
