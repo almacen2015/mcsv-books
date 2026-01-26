@@ -1,9 +1,11 @@
 package backend.dtos.reservation.requests;
 
+import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDate;
 
-public record CreateReservationRequest(Long roomId,
-                                       Long clientId,
-                                       LocalDate startDate,
-                                       LocalDate endDate) {
+public record CreateReservationRequest(@NotNull Long roomId,
+                                       @NotNull Long clientId,
+                                       @NotNull LocalDate startDate,
+                                       @NotNull LocalDate endDate) {
 }
