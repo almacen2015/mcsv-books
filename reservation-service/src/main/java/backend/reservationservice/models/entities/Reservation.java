@@ -53,6 +53,8 @@ public class Reservation {
         this.endDate = endDate;
         this.status = ReservationStatus.PAYMENT_PENDING;
         this.createdAt = LocalDateTime.now();
+
+        validateEndDateIsBeforeStartDate();
     }
 
     public void confirm() {
@@ -76,8 +78,8 @@ public class Reservation {
         this.status = ReservationStatus.EXPIRED;
     }
 
-    public static void validateEndDateIsBeforeStartDate(LocalDate startDate, LocalDate endDate) {
-        if (endDate.isBefore(startDate)) {
+    public void validateEndDateIsBeforeStartDate() {
+        if (this.endDate.isBefore(this.startDate)) {
             throw new ReservationException("End date cannot be before start date");
         }
     }

@@ -28,15 +28,20 @@ class ReservationServiceImplTest {
 
     @Test
     void shouldCreateReservationWithPaymentPendingStatus() {
+        Long roomId = 1L;
+        Long clientId = 1L;
+        LocalDate startDate = LocalDate.now().minusDays(1);
+        LocalDate endDate = LocalDate.now().plusDays(3);
+
         Reservation reservation = new Reservation(
-                1L,
-                1L,
-                LocalDate.now().plusDays(1),
-                LocalDate.now().plusDays(3));
+                roomId,
+                clientId,
+                startDate,
+                endDate);
 
         when(repository.existsOverlappingReservation(reservation.getRoomId(), List.of(ReservationStatus.PAYMENT_PENDING, ReservationStatus.CONFIRMED), reservation.getStartDate(), reservation.getEndDate())).thenReturn(false);
 
-        Reservation reservationCreated = service.create(reservation);
+        Reservation reservationCreated = service.create(roomId, clientId, startDate, endDate);
 
         assertThat(reservationCreated).isNotNull();
 
@@ -45,16 +50,21 @@ class ReservationServiceImplTest {
 
     @Test
     void shouldFailWhenRoomIsNotAvailable() {
+        Long roomId = 1L;
+        Long clientId = 2L;
+        LocalDate startDate = LocalDate.now().minusDays(1);
+        LocalDate endDate = LocalDate.now().plusDays(3);
+
         Reservation reservation = new Reservation(
-                1L,
-                1L,
-                LocalDate.now().plusDays(1),
-                LocalDate.now().plusDays(3));
+                roomId,
+                clientId,
+                startDate,
+                endDate);
 
         when(repository.existsOverlappingReservation(reservation.getRoomId(), List.of(ReservationStatus.PAYMENT_PENDING, ReservationStatus.CONFIRMED), reservation.getStartDate(), reservation.getEndDate())).thenReturn(true);
 
         assertThatThrownBy(() ->
-                service.create(reservation))
+                service.create(roomId, clientId, startDate, endDate))
                 .isInstanceOf(ReservationException.class);
 
         verify(repository, never()).save(any());
@@ -62,14 +72,13 @@ class ReservationServiceImplTest {
 
     @Test
     void shouldFailWhenEndDateIsBeforeStartDate() {
-        Reservation reservation = new Reservation(
-                1L,
-                1L,
-                LocalDate.now().plusDays(5),
-                LocalDate.now().plusDays(3));
+        Long roomId = 1L;
+        Long clientId = 2L;
+        LocalDate startDate = LocalDate.now().plusDays(3);
+        LocalDate endDate = LocalDate.now().plusDays(1);
 
         assertThatThrownBy(() ->
-                service.create(reservation))
+                service.create(roomId, clientId, startDate, endDate))
                 .isInstanceOf(ReservationException.class);
 
         verify(repository, never()).save(any());

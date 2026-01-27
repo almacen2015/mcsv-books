@@ -8,6 +8,7 @@ import backend.reservationservice.repositories.ReservationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -20,8 +21,8 @@ public class ReservationServiceImpl {
     }
 
     @Transactional
-    public Reservation create(Reservation reservation) {
-        Reservation.validateEndDateIsBeforeStartDate(reservation.getStartDate(), reservation.getEndDate());
+    public Reservation create(Long roomId, Long clientId, LocalDate startDate, LocalDate endDate) {
+        Reservation reservation = new Reservation(roomId, clientId, startDate, endDate);
         boolean conflict = repository.existsOverlappingReservation(reservation.getRoomId(),
                 List.of(ReservationStatus.PAYMENT_PENDING, ReservationStatus.CONFIRMED),
                 reservation.getStartDate(),
