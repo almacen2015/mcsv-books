@@ -30,7 +30,9 @@ public class ReservationServiceImpl {
             throw new ReservationException(ReservationException.ROOM_NOT_AVAILABLE);
         }
 
-        return repository.save(reservation);
+        repository.save(reservation);
+
+        return reservation;
     }
 
     @Transactional
