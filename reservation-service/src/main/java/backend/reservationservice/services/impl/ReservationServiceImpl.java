@@ -21,6 +21,7 @@ public class ReservationServiceImpl {
 
     @Transactional
     public Reservation create(Reservation reservation) {
+        Reservation.validateEndDateIsBeforeStartDate(reservation.getStartDate(), reservation.getEndDate());
         boolean conflict = repository.existsOverlappingReservation(reservation.getRoomId(),
                 List.of(ReservationStatus.PAYMENT_PENDING, ReservationStatus.CONFIRMED),
                 reservation.getStartDate(),

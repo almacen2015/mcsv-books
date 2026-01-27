@@ -58,6 +58,20 @@ class ReservationServiceImplTest {
                 .isInstanceOf(ReservationException.class);
 
         verify(repository, never()).save(any());
+    }
 
+    @Test
+    void shouldFailWhenEndDateIsBeforeStartDate() {
+        Reservation reservation = new Reservation(
+                1L,
+                1L,
+                LocalDate.now().plusDays(5),
+                LocalDate.now().plusDays(3));
+
+        assertThatThrownBy(() ->
+                service.create(reservation))
+                .isInstanceOf(ReservationException.class);
+
+        verify(repository, never()).save(any());
     }
 }

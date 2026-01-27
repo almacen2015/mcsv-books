@@ -1,6 +1,7 @@
 package backend.reservationservice.models.entities;
 
 import backend.enums.ReservationStatus;
+import backend.exceptions.reservation.ReservationException;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -42,7 +43,8 @@ public class Reservation {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    protected Reservation() {}
+    protected Reservation() {
+    }
 
     public Reservation(Long roomId, Long clientId, LocalDate startDate, LocalDate endDate) {
         this.roomId = roomId;
@@ -72,5 +74,11 @@ public class Reservation {
             throw new IllegalStateException("Only reservations in PAYMENT_PENDING can be expired");
         }
         this.status = ReservationStatus.EXPIRED;
+    }
+
+    public static void validateEndDateIsBeforeStartDate(LocalDate startDate, LocalDate endDate) {
+        if (endDate.isBefore(startDate)) {
+            throw new ReservationException("End date cannot be before start date");
+        }
     }
 }
