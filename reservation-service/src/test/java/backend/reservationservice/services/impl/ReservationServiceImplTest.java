@@ -1,6 +1,7 @@
 package backend.reservationservice.services.impl;
 
 import backend.enums.ReservationStatus;
+import backend.exceptions.reservation.ReservationException;
 import backend.reservationservice.models.entities.Reservation;
 import backend.reservationservice.repositories.ReservationRepository;
 import org.junit.jupiter.api.Test;
@@ -13,8 +14,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceImplTest {
@@ -40,5 +41,23 @@ class ReservationServiceImplTest {
         assertThat(reservationCreated).isNotNull();
 
         verify(repository).save(reservationCreated);
+    }
+
+    @Test
+    void shouldFailWhenRoomIsNotAvailable() {
+        Reservation reservation = new Reservation(
+                1L,
+                1L,
+                LocalDate.now().plusDays(1),
+                LocalDate.now().plusDays(3));
+
+        when(repository.existsOverlappingReservation(reservation.getRoomId(), List.of(ReservationStatus.PAYMENT_PENDING, ReservationStatus.CONFIRMED), reservation.getStartDate(), reservation.getEndDate())).thenReturn(true);
+
+        assertThatThrownBy(() ->
+                service.create(reservation))
+                .isInstanceOf(ReservationException.class);
+
+        verify(repository, never()).save(any());
+
     }
 }
