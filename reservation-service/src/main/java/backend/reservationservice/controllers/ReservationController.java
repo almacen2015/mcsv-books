@@ -12,10 +12,7 @@ import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/reservations")
@@ -35,13 +32,26 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponseDto<ReservationResponseDto>> createReservation(@Valid @RequestBody CreateReservationRequest request){
+    public ResponseEntity<ApiResponseDto<ReservationResponseDto>> createReservation(@Valid @RequestBody CreateReservationRequest request) {
         Reservation reservationCreated = service.create(request.roomId(), request.clientId(), request.startDate(), request.endDate());
         ReservationResponseDto response = mapper.toResponse(reservationCreated);
-        ApiResponseDto<ReservationResponseDto> apiResponseDto =  new ApiResponseDto<>(HttpStatus.CREATED.value(), Message.CLIENT_CREATED, response);
+        ApiResponseDto<ReservationResponseDto> apiResponseDto = new ApiResponseDto<>(HttpStatus.CREATED.value(), Message.RESERVATION_CREATED, response);
 
         final HttpHeaders headers = createHeader();
 
         return new ResponseEntity<>(apiResponseDto, headers, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponseDto<ReservationResponseDto>> getReservation(@PathVariable Long id) {
+        Reservation reservation = service.getById(id);
+        ReservationResponseDto response = mapper.toResponse(reservation);
+
+        ApiResponseDto<ReservationResponseDto> apiResponseDto = new ApiResponseDto<>(HttpStatus.FOUND.value(), Message.RESERVATION_FOUND, response);
+
+        final HttpHeaders headers = createHeader();
+
+        return new ResponseEntity<>(apiResponseDto, headers, HttpStatus.FOUND);
+
     }
 }

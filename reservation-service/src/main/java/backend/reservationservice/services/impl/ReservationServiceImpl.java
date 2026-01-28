@@ -20,6 +20,11 @@ public class ReservationServiceImpl {
         this.repository = reservationRepository;
     }
 
+    public Reservation getById(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new ReservationException(ReservationException.RESERVATION_NOT_FOUND));
+    }
+
     @Transactional
     public Reservation create(Long roomId, Long clientId, LocalDate startDate, LocalDate endDate) {
         Reservation reservation = new Reservation(roomId, clientId, startDate, endDate);
