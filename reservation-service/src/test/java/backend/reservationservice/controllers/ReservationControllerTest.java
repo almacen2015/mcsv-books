@@ -13,6 +13,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -29,6 +31,25 @@ class ReservationControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Test
+    void shouldReturn500WhenUnexpectedErrorOccurs() throws Exception {
+
+        CreateReservationRequest request = new CreateReservationRequest(
+                1L,
+                1L,
+                LocalDate.now().plusDays(1),
+                LocalDate.now().plusDays(2)
+        );
+
+        when(service.create(anyLong(), anyLong(), any(LocalDate.class), any(LocalDate.class)))
+                .thenThrow(new RuntimeException("DB down"));
+
+        mockMvc.perform(post("/api/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isInternalServerError());
+    }
 
     @Test
     void shouldReturn400WhenRequestIsInvalid() throws Exception {

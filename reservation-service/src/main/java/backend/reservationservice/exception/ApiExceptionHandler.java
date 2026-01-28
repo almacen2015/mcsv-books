@@ -5,9 +5,11 @@ import backend.exceptions.reservation.ReservationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.List;
 import java.util.Set;
 
 @Slf4j
@@ -29,5 +31,35 @@ public class ApiExceptionHandler {
         ApiResponseDto<Object> response = new ApiResponseDto<>(status.value(), e.getMessage(), null);
 
         return new ResponseEntity<>(response, status);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiResponseDto<Object>> handleValidation(
+            MethodArgumentNotValidException ex
+    ) {
+        List<String> errors = ex.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(e -> e.getField() + ": " + e.getDefaultMessage())
+                .toList();
+
+        return ResponseEntity.badRequest()
+                .body(new ApiResponseDto<>(
+                        HttpStatus.BAD_REQUEST.value(),
+                        ex.getMessage(),
+                        null
+                ));
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ApiResponseDto<Object>> handleUnexpected(
+            RuntimeException ex
+    ) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ApiResponseDto<>(
+                        HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                        ex.getMessage(),
+                        null
+                ));
     }
 }
