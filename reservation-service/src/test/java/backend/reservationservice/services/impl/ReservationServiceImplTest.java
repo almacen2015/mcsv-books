@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -25,6 +26,42 @@ class ReservationServiceImplTest {
 
     @InjectMocks
     private ReservationServiceImpl service;
+
+    @Test
+    void shouldThrowExceptionWhenReservationNotFound() {
+        Long id = 99L;
+
+        when(repository.findById(id))
+                .thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> service.getById(id))
+                .isInstanceOf(ReservationException.class);
+
+        verify(repository).findById(id);
+    }
+
+    @Test
+    void shouldReturnReservationWhenFound() {
+        Long id = 1L;
+
+        Reservation reservation = new Reservation(
+                1L,
+                1L,
+                LocalDate.now(),
+                LocalDate.now().plusDays(2)
+        );
+
+        when(repository.findById(id))
+                .thenReturn(Optional.of(reservation));
+
+        Reservation result = service.getById(id);
+
+        assertThat(result).isNotNull();
+        assertThat(result).isEqualTo(reservation);
+
+        verify(repository).findById(id);
+
+    }
 
     @Test
     void shouldCreateReservationWithPaymentPendingStatus() {
