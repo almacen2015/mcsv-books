@@ -28,6 +28,10 @@ public class ApiExceptionHandler {
                 HttpStatus.BAD_REQUEST :
                 HttpStatus.INTERNAL_SERVER_ERROR;
 
+        if (e.getMessage().equals(ReservationException.RESERVATION_NOT_FOUND)) {
+            status = HttpStatus.NOT_FOUND;
+        }
+
         ApiResponseDto<Object> response = new ApiResponseDto<>(status.value(), e.getMessage(), null);
 
         return new ResponseEntity<>(response, status);

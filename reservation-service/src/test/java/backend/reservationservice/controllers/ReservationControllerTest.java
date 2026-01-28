@@ -1,7 +1,10 @@
 package backend.reservationservice.controllers;
 
 import backend.dtos.reservation.requests.CreateReservationRequest;
+import backend.dtos.reservation.responses.ReservationResponseDto;
+import backend.exceptions.reservation.ReservationException;
 import backend.reservationservice.models.entities.Reservation;
+import backend.reservationservice.models.mapper.ReservationMapper;
 import backend.reservationservice.services.impl.ReservationServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -12,11 +15,15 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -31,6 +38,54 @@ class ReservationControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @MockitoBean
+    private ReservationMapper mapper;
+
+    @Test
+    void shouldReturn404WhenReservationNotFound() throws Exception {
+        Long id = 99L;
+
+        when(service.getById(id))
+                .thenThrow(new ReservationException(ReservationException.RESERVATION_NOT_FOUND));
+
+        mockMvc.perform(get("/api/reservations/{id}", id))
+                .andExpect(status().isNotFound());
+    }
+
+
+    @Test
+    void shouldReturnReservationWhenFound() throws Exception {
+        Long id = 1L;
+
+        Reservation reservation = new Reservation(
+                1L,
+                1L,
+                LocalDate.now(),
+                LocalDate.now().plusDays(2)
+        );
+
+        ReservationResponseDto responseDto = new ReservationResponseDto(
+                id,
+                1L,
+                1L,
+                LocalDate.now(),
+                LocalDate.now().plusDays(2),
+                "PAYMENT_PENDING",
+                null,
+                LocalDateTime.now()
+        );
+
+        when(service.getById(id)).thenReturn(reservation);
+        when(mapper.toResponse(any(Reservation.class)))
+                .thenReturn(responseDto);
+
+        mockMvc.perform(get("/api/reservations/{id}", id))
+                .andExpect(status().isFound())
+                .andExpect(jsonPath("$.data.roomId").value(1))
+                .andExpect(jsonPath("$.data.status").value("PAYMENT_PENDING"));
+    }
+
 
     @Test
     void shouldReturn500WhenUnexpectedErrorOccurs() throws Exception {
