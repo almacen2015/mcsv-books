@@ -31,6 +31,21 @@ class ReservationControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
+    void shouldReturn400WhenRequestIsInvalid() throws Exception {
+        CreateReservationRequest request = new CreateReservationRequest(
+                null,
+                1L,
+                LocalDate.now().plusDays(1),
+                LocalDate.now().plusDays(2)
+        );
+
+        mockMvc.perform(post("/api/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void shouldCreateReservation() throws Exception {
         CreateReservationRequest request = new CreateReservationRequest(
                 1L,

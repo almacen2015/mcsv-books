@@ -4,8 +4,8 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 
-public record CreateReservationRequest(@NotNull Long roomId,
-                                       @NotNull Long clientId,
-                                       @NotNull LocalDate startDate,
-                                       @NotNull LocalDate endDate) {
+public record CreateReservationRequest(@NotNull(message = "roomId is required") Long roomId,
+                                       @NotNull(message = "clientId is required") Long clientId,
+                                       @NotNull(message = "startDate is required") LocalDate startDate,
+                                       @NotNull(message = "endDate is required") LocalDate endDate) {
 }
