@@ -25,10 +25,21 @@ public class ReservationController {
         this.service = service;
     }
 
-    private HttpHeaders createHeader() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("X-Trace-Id", MDC.get("traceId"));
-        return headers;
+    @PatchMapping("/{id}/cancel")
+    public ResponseEntity<ApiResponseDto<ReservationResponseDto>> cancel(
+            @PathVariable Long id) {
+
+        Reservation cancelled = service.cancel(id);
+        ReservationResponseDto response = mapper.toResponse(cancelled);
+
+        ApiResponseDto<ReservationResponseDto> apiResponse =
+                new ApiResponseDto<>(HttpStatus.OK.value(),
+                        Message.RESERVATION_CANCELLED,
+                        response);
+
+        final HttpHeaders headers = createHeader();
+
+        return new ResponseEntity<>(apiResponse, headers, HttpStatus.OK);
     }
 
     @PostMapping
@@ -53,5 +64,11 @@ public class ReservationController {
 
         return new ResponseEntity<>(apiResponseDto, headers, HttpStatus.FOUND);
 
+    }
+
+    private HttpHeaders createHeader() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-Trace-Id", MDC.get("traceId"));
+        return headers;
     }
 }
