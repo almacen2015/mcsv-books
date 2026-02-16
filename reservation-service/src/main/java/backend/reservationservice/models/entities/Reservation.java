@@ -57,11 +57,12 @@ public class Reservation {
         validateEndDateIsBeforeStartDate();
     }
 
-    public void confirm() {
+    public void confirm(Long paymentId) {
         if (this.status != ReservationStatus.PAYMENT_PENDING) {
             throw new IllegalStateException("Only reservations in PAYMENT_PENDING can be confirmed");
         }
         this.status = ReservationStatus.CONFIRMED;
+        this.paymentId = paymentId;
     }
 
     public void cancel() {

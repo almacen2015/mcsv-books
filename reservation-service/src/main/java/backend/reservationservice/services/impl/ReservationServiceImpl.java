@@ -43,11 +43,12 @@ public class ReservationServiceImpl {
     }
 
     @Transactional
-    public void confirm(Long id) {
+    public Reservation confirm(Long id, Long paymentId) {
         Reservation reservation = repository.findById(id)
                 .orElseThrow(() -> new ReservationException(ReservationException.RESERVATION_NOT_FOUND));
 
-        reservation.confirm();
+        reservation.confirm(paymentId);
+        return reservation;
     }
 
     @Transactional
