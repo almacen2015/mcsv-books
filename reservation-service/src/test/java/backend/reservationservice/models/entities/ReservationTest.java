@@ -5,7 +5,8 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ReservationTest {
 
@@ -17,7 +18,7 @@ class ReservationTest {
                 LocalDate.now().plusDays(1),
                 LocalDate.now().plusDays(3));
 
-        reservation.confirm();
+        reservation.confirm(1L);
 
         assertEquals(ReservationStatus.CONFIRMED, reservation.getStatus());
     }
@@ -30,9 +31,9 @@ class ReservationTest {
                 LocalDate.now().plusDays(1),
                 LocalDate.now().plusDays(3));
 
-        reservation.confirm();
+        reservation.confirm(1L);
 
-        assertThrows(IllegalStateException.class, reservation::confirm);
+        assertThrows(IllegalStateException.class, () -> reservation.confirm(1L));
     }
 
     @Test
