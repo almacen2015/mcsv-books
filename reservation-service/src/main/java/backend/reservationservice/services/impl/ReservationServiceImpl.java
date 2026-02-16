@@ -51,11 +51,13 @@ public class ReservationServiceImpl {
     }
 
     @Transactional
-    public void cancel(Long id) {
+    public Reservation cancel(Long id) {
         Reservation reservation = repository.findById(id)
                 .orElseThrow(() -> new ReservationException(ReservationException.RESERVATION_NOT_FOUND));
 
         reservation.cancel();
+
+        return repository.save(reservation);
     }
 
     @Transactional
