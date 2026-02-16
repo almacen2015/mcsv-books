@@ -20,8 +20,7 @@ import java.time.LocalDateTime;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -39,6 +38,29 @@ class ReservationControllerTest {
 
     @MockitoBean
     private ReservationMapper mapper;
+
+    @Test
+    void shouldCancelReservationSuccessfully() throws Exception {
+
+        Long id = 1L;
+
+        Reservation reservation = new Reservation(
+                1L,
+                1L,
+                LocalDate.now().plusDays(1),
+                LocalDate.now().plusDays(3)
+        );
+
+        reservation.cancel();
+
+        when(service.cancel(id)).thenReturn(reservation);
+
+        mockMvc.perform(patch("/api/reservations/{id}/cancel", id))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.status")
+                        .value("CANCELLED"));
+    }
+
 
     @Test
     void shouldReturn404WhenReservationNotFound() throws Exception {
