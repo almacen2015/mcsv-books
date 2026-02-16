@@ -28,6 +28,65 @@ class ReservationServiceImplTest {
     private ReservationServiceImpl service;
 
     @Test
+    void shouldThrowExceptionWhenAlreadyCancelled() {
+
+        Long id = 1L;
+
+        Reservation reservation = new Reservation(
+                1L,
+                1L,
+                LocalDate.now().plusDays(1),
+                LocalDate.now().plusDays(3)
+        );
+
+        reservation.cancel();
+
+        when(repository.findById(id)).thenReturn(Optional.of(reservation));
+
+        assertThatThrownBy(() -> service.cancel(id))
+                .isInstanceOf(IllegalStateException.class);
+
+        verify(repository, never()).save(any());
+    }
+
+
+    @Test
+    void shouldThrowExceptionWhenReservationNotFoundCancel() {
+
+        Long id = 1L;
+
+        when(repository.findById(id)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> service.cancel(id))
+                .isInstanceOf(ReservationException.class);
+
+        verify(repository, never()).save(any());
+    }
+
+    @Test
+    void shouldCancelReservationSuccessfully() {
+
+        Long id = 1L;
+
+        Reservation reservation = new Reservation(
+                1L,
+                1L,
+                LocalDate.now().plusDays(1),
+                LocalDate.now().plusDays(3)
+        );
+
+        when(repository.findById(id)).thenReturn(Optional.of(reservation));
+        when(repository.save(reservation)).thenReturn(reservation);
+
+        Reservation cancelled = service.cancel(id);
+
+        assertThat(cancelled.getStatus())
+                .isEqualTo(ReservationStatus.CANCELLED);
+
+        verify(repository).save(reservation);
+    }
+
+    @Test
     void shouldThrowExceptionWhenReservationNotFound() {
         Long id = 99L;
 
