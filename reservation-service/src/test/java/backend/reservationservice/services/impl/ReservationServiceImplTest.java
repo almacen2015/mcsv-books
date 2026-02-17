@@ -28,6 +28,67 @@ class ReservationServiceImplTest {
     private ReservationServiceImpl service;
 
     @Test
+    void confirm_WhenReservationIsCancelled_ShouldThrowIllegalStateException() {
+
+        Long id = 1L;
+        Long paymentId = 100L;
+
+        Reservation reservation = new Reservation(
+                1L,
+                1L,
+                LocalDate.now().plusDays(1),
+                LocalDate.now().plusDays(3)
+        );
+
+        reservation.cancel();
+
+        when(repository.findById(id)).thenReturn(Optional.of(reservation));
+
+        assertThatThrownBy(() -> service.confirm(id, paymentId))
+                .isInstanceOf(IllegalStateException.class);
+    }
+
+
+    @Test
+    void confirm_WhenReservationDoesNotExist_ShouldThrowReservationNotFoundException() {
+
+        Long id = 1L;
+        Long paymentId = 100L;
+
+        when(repository.findById(id)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> service.confirm(id, paymentId))
+                .isInstanceOf(ReservationException.class)
+                .hasMessageContaining(ReservationException.RESERVATION_NOT_FOUND);
+    }
+
+
+    @Test
+    void confirm_WhenReservationIsPaymentPending_ShouldConfirmSuccessfully() {
+
+        Long id = 1L;
+        Long paymentId = 100L;
+
+        Reservation reservation = new Reservation(
+                1L,
+                1L,
+                LocalDate.now().plusDays(1),
+                LocalDate.now().plusDays(3)
+        );
+
+        when(repository.findById(id)).thenReturn(Optional.of(reservation));
+
+        Reservation confirmed = service.confirm(id, paymentId);
+
+        assertThat(confirmed.getStatus())
+                .isEqualTo(ReservationStatus.CONFIRMED);
+
+        assertThat(confirmed.getPaymentId())
+                .isEqualTo(paymentId);
+    }
+
+
+    @Test
     void shouldThrowExceptionWhenAlreadyCancelled() {
 
         Long id = 1L;
