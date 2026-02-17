@@ -1,6 +1,7 @@
 package backend.reservationservice.controllers;
 
 import backend.dtos.apiresponse.ApiResponseDto;
+import backend.dtos.reservation.requests.ConfirmReservationRequest;
 import backend.dtos.reservation.requests.CreateReservationRequest;
 import backend.dtos.reservation.responses.ReservationResponseDto;
 import backend.reservationservice.models.entities.Reservation;
@@ -25,11 +26,11 @@ public class ReservationController {
         this.service = service;
     }
 
-    @PatchMapping("/reservations/{id}/confirm/{paymentId}")
+    @PatchMapping("/reservations/{id}/confirm")
     public ResponseEntity<ApiResponseDto<ReservationResponseDto>> confirm(
-            @PathVariable Long id, @PathVariable Long paymentId) {
+            @PathVariable Long id, @Valid @RequestBody ConfirmReservationRequest confirmReservationRequest) {
 
-        Reservation confirmed = service.confirm(id, paymentId);
+        Reservation confirmed = service.confirm(id, confirmReservationRequest.paymentId());
         ReservationResponseDto response = mapper.toResponse(confirmed);
 
         ApiResponseDto<ReservationResponseDto> apiResponse =
