@@ -28,6 +28,28 @@ class ReservationServiceImplTest {
     private ReservationServiceImpl service;
 
     @Test
+    void confirm_WhenReservationIsAlreadyConfirmed_ShouldThrowIllegalStateException() {
+
+        Long id = 1L;
+        Long paymentId = 100L;
+
+        Reservation reservation = new Reservation(
+                1L,
+                1L,
+                LocalDate.now().plusDays(1),
+                LocalDate.now().plusDays(3)
+        );
+
+        reservation.confirm(999L);
+
+        when(repository.findById(id)).thenReturn(Optional.of(reservation));
+
+        assertThatThrownBy(() -> service.confirm(id, paymentId))
+                .isInstanceOf(IllegalStateException.class);
+    }
+
+
+    @Test
     void confirm_WhenReservationIsCancelled_ShouldThrowIllegalStateException() {
 
         Long id = 1L;
