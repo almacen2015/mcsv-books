@@ -26,9 +26,10 @@ public class ReservationController {
         this.service = service;
     }
 
-    @PatchMapping("/reservations/{id}/confirm")
+    @PatchMapping("/{id}/confirm")
     public ResponseEntity<ApiResponseDto<ReservationResponseDto>> confirm(
-            @PathVariable Long id, @Valid @RequestBody ConfirmReservationRequest confirmReservationRequest) {
+            @PathVariable Long id,
+            @Valid @RequestBody ConfirmReservationRequest confirmReservationRequest) {
 
         Reservation confirmed = service.confirm(id, confirmReservationRequest.paymentId());
         ReservationResponseDto response = mapper.toResponse(confirmed);

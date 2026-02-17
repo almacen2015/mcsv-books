@@ -1,11 +1,14 @@
 package backend.reservationservice.controllers;
 
+import backend.dtos.reservation.requests.ConfirmReservationRequest;
 import backend.dtos.reservation.requests.CreateReservationRequest;
 import backend.dtos.reservation.responses.ReservationResponseDto;
+import backend.enums.ReservationStatus;
 import backend.exceptions.reservation.ReservationException;
 import backend.reservationservice.models.entities.Reservation;
 import backend.reservationservice.models.mapper.ReservationMapper;
 import backend.reservationservice.services.impl.ReservationServiceImpl;
+import backend.utils.Message;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +41,70 @@ class ReservationControllerTest {
 
     @MockitoBean
     private ReservationMapper mapper;
+
+    @Test
+    void confirmReservation_WhenPaymentIdIsNull_ShouldReturn400() throws Exception {
+
+        Long reservationId = 1L;
+
+        ConfirmReservationRequest confirmReservationRequest = new ConfirmReservationRequest(null);
+
+        mockMvc.perform(patch("/api/reservations/{id}/confirm", reservationId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(confirmReservationRequest))
+                )
+                .andExpect(status().isBadRequest());
+    }
+
+
+    @Test
+    void confirmReservation_WhenReservationNotFound_ShouldReturn404() throws Exception {
+
+        Long reservationId = 1L;
+        Long paymentId = 10L;
+
+        when(service.confirm(reservationId, paymentId))
+                .thenThrow(new ReservationException(ReservationException.RESERVATION_NOT_FOUND));
+
+        ConfirmReservationRequest confirmReservationRequest = new ConfirmReservationRequest(paymentId);
+
+        mockMvc.perform(patch("/api/reservations/{id}/confirm", reservationId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(confirmReservationRequest))
+                )
+                .andExpect(status().isNotFound());
+    }
+
+
+    @Test
+    void confirmReservation_WhenValidCommand_ShouldReturnConfirmedReservation() throws Exception {
+
+        Long reservationId = 1L;
+        Long paymentId = 10L;
+
+        Reservation reservation = new Reservation(
+                1L,
+                1L,
+                LocalDate.now().plusDays(1),
+                LocalDate.now().plusDays(3)
+        );
+
+        ConfirmReservationRequest confirmReservationRequest = new ConfirmReservationRequest(paymentId);
+
+        reservation.confirm(paymentId);
+
+        when(service.confirm(reservationId, paymentId))
+                .thenReturn(reservation);
+
+        mockMvc.perform(patch("/api/reservations/{id}/confirm", reservationId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(confirmReservationRequest))
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.status")
+                        .value(ReservationStatus.CONFIRMED.toString()));
+    }
+
 
     @Test
     void shouldCancelReservationSuccessfully() throws Exception {
