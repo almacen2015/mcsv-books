@@ -25,6 +25,23 @@ public class ReservationController {
         this.service = service;
     }
 
+    @PatchMapping("/reservations/{id}/confirm/{paymentId}")
+    public ResponseEntity<ApiResponseDto<ReservationResponseDto>> confirm(
+            @PathVariable Long id, @PathVariable Long paymentId) {
+
+        Reservation confirmed = service.confirm(id, paymentId);
+        ReservationResponseDto response = mapper.toResponse(confirmed);
+
+        ApiResponseDto<ReservationResponseDto> apiResponse =
+                new ApiResponseDto<>(HttpStatus.OK.value(),
+                        Message.RESERVATION_CONFIRMED,
+                        response);
+
+        final HttpHeaders headers = createHeader();
+
+        return new ResponseEntity<>(apiResponse, headers, HttpStatus.OK);
+    }
+
     @PatchMapping("/{id}/cancel")
     public ResponseEntity<ApiResponseDto<ReservationResponseDto>> cancel(
             @PathVariable Long id) {
