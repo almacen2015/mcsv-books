@@ -6,7 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
     @Query(""" 
@@ -21,4 +23,15 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
                                          Collection<ReservationStatus> blockingStatuses,
                                          LocalDate startDate,
                                          LocalDate endDate);
+
+    @Query("""
+                SELECT r FROM Reservation r
+                WHERE r.status = :status
+                AND r.createdAt <= :expirationTime
+            """)
+    List<Reservation> findExpiredReservations(
+            ReservationStatus status,
+            LocalDateTime expirationTime
+    );
+
 }
