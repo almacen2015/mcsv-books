@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,6 +27,30 @@ class ReservationServiceImplTest {
 
     @InjectMocks
     private ReservationServiceImpl service;
+
+    @Test
+    void expirePendingReservations_WhenExpiredReservationsExist_ShouldExpireThem() {
+
+        Reservation reservation = new Reservation(
+                1L,
+                1L,
+                LocalDate.now().plusDays(1),
+                LocalDate.now().plusDays(3)
+        );
+
+        List<Reservation> expiredReservations = List.of(reservation);
+
+        when(repository.findExpiredReservations(
+                eq(ReservationStatus.PAYMENT_PENDING),
+                any(LocalDateTime.class)
+        )).thenReturn(expiredReservations);
+
+        service.expirePendingReservations();
+
+        assertThat(reservation.getStatus())
+                .isEqualTo(ReservationStatus.EXPIRED);
+    }
+
 
     @Test
     void confirm_WhenReservationIsAlreadyConfirmed_ShouldThrowIllegalStateException() {
