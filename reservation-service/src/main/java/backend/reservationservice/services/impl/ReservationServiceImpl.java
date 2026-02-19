@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -62,10 +63,19 @@ public class ReservationServiceImpl {
     }
 
     @Transactional
-    public void expire(Long id) {
-        Reservation reservation = repository.findById(id)
-                .orElseThrow(() -> new ReservationException(ReservationException.RESERVATION_NOT_FOUND));
+    public void expirePendingReservations() {
 
-        reservation.expire();
+        LocalDateTime expirationTime = LocalDateTime.now().minusMinutes(15);
+
+        List<Reservation> expiredReservations =
+                repository.findExpiredReservations(
+                        ReservationStatus.PAYMENT_PENDING,
+                        expirationTime
+                );
+
+        for (Reservation reservation : expiredReservations) {
+            reservation.expire();
+        }
     }
+
 }
