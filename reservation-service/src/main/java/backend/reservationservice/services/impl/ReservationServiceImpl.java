@@ -1,10 +1,11 @@
 package backend.reservationservice.services.impl;
 
+import backend.dtos.reservation.responses.ReservationResponseDto;
 import backend.enums.ReservationStatus;
 import backend.exceptions.reservation.ReservationException;
-import backend.reservationservice.models.entities.Reservation;
-import backend.reservationservice.models.mapper.ReservationMapper;
-import backend.reservationservice.repositories.ReservationRepository;
+import backend.reservationservice.model.entity.Reservation;
+import backend.reservationservice.model.mapper.ReservationMapper;
+import backend.reservationservice.repository.ReservationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,13 +54,15 @@ public class ReservationServiceImpl {
     }
 
     @Transactional
-    public Reservation cancel(Long id) {
+    public ReservationResponseDto cancel(Long id) {
         Reservation reservation = repository.findById(id)
                 .orElseThrow(() -> new ReservationException(ReservationException.RESERVATION_NOT_FOUND));
 
         reservation.cancel();
 
-        return repository.save(reservation);
+        Reservation cancelled = repository.save(reservation);
+
+        return mapper.toResponse(cancelled);
     }
 
     @Transactional

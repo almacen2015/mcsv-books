@@ -2,8 +2,8 @@ package backend.reservationservice.services.impl;
 
 import backend.enums.ReservationStatus;
 import backend.exceptions.reservation.ReservationException;
-import backend.reservationservice.models.entities.Reservation;
-import backend.reservationservice.repositories.ReservationRepository;
+import backend.reservationservice.model.entity.Reservation;
+import backend.reservationservice.repository.ReservationRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

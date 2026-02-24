@@ -1,4 +1,4 @@
-package backend.reservationservice.models.entities;
+package backend.reservationservice.model.entity;
 
 import backend.enums.ReservationStatus;
 import org.junit.jupiter.api.Test;

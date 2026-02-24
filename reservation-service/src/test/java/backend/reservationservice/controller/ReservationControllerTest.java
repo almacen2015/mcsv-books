@@ -1,14 +1,13 @@
-package backend.reservationservice.controllers;
+package backend.reservationservice.controller;
 
 import backend.dtos.reservation.requests.ConfirmReservationRequest;
 import backend.dtos.reservation.requests.CreateReservationRequest;
 import backend.dtos.reservation.responses.ReservationResponseDto;
 import backend.enums.ReservationStatus;
 import backend.exceptions.reservation.ReservationException;
-import backend.reservationservice.models.entities.Reservation;
-import backend.reservationservice.models.mapper.ReservationMapper;
+import backend.reservationservice.model.entity.Reservation;
+import backend.reservationservice.model.mapper.ReservationMapper;
 import backend.reservationservice.services.impl.ReservationServiceImpl;
-import backend.utils.Message;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

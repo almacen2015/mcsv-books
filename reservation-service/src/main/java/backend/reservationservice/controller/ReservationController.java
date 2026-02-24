@@ -1,11 +1,11 @@
-package backend.reservationservice.controllers;
+package backend.reservationservice.controller;
 
 import backend.dtos.apiresponse.ApiResponseDto;
 import backend.dtos.reservation.requests.ConfirmReservationRequest;
 import backend.dtos.reservation.requests.CreateReservationRequest;
 import backend.dtos.reservation.responses.ReservationResponseDto;
-import backend.reservationservice.models.entities.Reservation;
-import backend.reservationservice.models.mapper.ReservationMapper;
+import backend.reservationservice.model.entity.Reservation;
+import backend.reservationservice.model.mapper.ReservationMapper;
 import backend.reservationservice.services.impl.ReservationServiceImpl;
 import backend.utils.Message;
 import jakarta.validation.Valid;
@@ -48,8 +48,7 @@ public class ReservationController {
     public ResponseEntity<ApiResponseDto<ReservationResponseDto>> cancel(
             @PathVariable Long id) {
 
-        Reservation cancelled = service.cancel(id);
-        ReservationResponseDto response = mapper.toResponse(cancelled);
+        ReservationResponseDto response = service.cancel(id);
 
         ApiResponseDto<ReservationResponseDto> apiResponse =
                 new ApiResponseDto<>(HttpStatus.OK.value(),

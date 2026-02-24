@@ -1,8 +1,8 @@
-package backend.reservationservice.models.mapper;
+package backend.reservationservice.model.mapper;
 
 import backend.dtos.reservation.requests.CreateReservationRequest;
 import backend.dtos.reservation.responses.ReservationResponseDto;
-import backend.reservationservice.models.entities.Reservation;
+import backend.reservationservice.model.entity.Reservation;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
