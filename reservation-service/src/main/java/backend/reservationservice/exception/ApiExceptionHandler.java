@@ -3,6 +3,7 @@ package backend.reservationservice.exception;
 import backend.dtos.apiresponse.ApiResponseDto;
 import backend.exceptions.reservation.ReservationException;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.dialect.lock.OptimisticEntityLockException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -41,11 +42,7 @@ public class ApiExceptionHandler {
     public ResponseEntity<ApiResponseDto<Object>> handleValidation(
             MethodArgumentNotValidException ex
     ) {
-        List<String> errors = ex.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .map(e -> e.getField() + ": " + e.getDefaultMessage())
-                .toList();
+        log.error(ex.getMessage(), ex);
 
         return ResponseEntity.badRequest()
                 .body(new ApiResponseDto<>(
@@ -59,10 +56,24 @@ public class ApiExceptionHandler {
     public ResponseEntity<ApiResponseDto<Object>> handleUnexpected(
             RuntimeException ex
     ) {
+        log.error(ex.getMessage(), ex);
+
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ApiResponseDto<>(
                         HttpStatus.INTERNAL_SERVER_ERROR.value(),
                         ex.getMessage(),
+                        null
+                ));
+    }
+
+    @ExceptionHandler(OptimisticEntityLockException.class)
+    public ResponseEntity<ApiResponseDto<Object>> handleOptimisticLock(RuntimeException ex) {
+        log.error(ex.getMessage(), ex);
+
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ApiResponseDto<>(
+                        HttpStatus.CONFLICT.value(),
+                        "Reservation was modified",
                         null
                 ));
     }
