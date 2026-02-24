@@ -1,4 +1,4 @@
-package backend.reservationservice.services.impl;
+package backend.reservationservice.service.impl;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

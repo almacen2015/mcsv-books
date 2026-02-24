@@ -1,4 +1,4 @@
-package backend.reservationservice.services.impl;
+package backend.reservationservice.service.impl;
 
 import backend.dtos.reservation.responses.ReservationResponseDto;
 import backend.enums.ReservationStatus;

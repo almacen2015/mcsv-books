@@ -6,7 +6,7 @@ import backend.dtos.reservation.requests.CreateReservationRequest;
 import backend.dtos.reservation.responses.ReservationResponseDto;
 import backend.reservationservice.model.entity.Reservation;
 import backend.reservationservice.model.mapper.ReservationMapper;
-import backend.reservationservice.services.impl.ReservationServiceImpl;
+import backend.reservationservice.service.impl.ReservationServiceImpl;
 import backend.utils.Message;
 import jakarta.validation.Valid;
 import org.slf4j.MDC;

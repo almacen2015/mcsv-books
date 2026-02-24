@@ -1,5 +1,6 @@
-package backend.reservationservice.services.impl;
+package backend.reservationservice.service.impl;
 
+import backend.dtos.reservation.responses.ReservationResponseDto;
 import backend.enums.ReservationStatus;
 import backend.exceptions.reservation.ReservationException;
 import backend.reservationservice.model.entity.Reservation;
@@ -225,10 +226,10 @@ class ReservationServiceImplTest {
         when(repository.findById(id)).thenReturn(Optional.of(reservation));
         when(repository.save(reservation)).thenReturn(reservation);
 
-        Reservation cancelled = service.cancel(id);
+        ReservationResponseDto cancelled = service.cancel(id);
 
-        assertThat(cancelled.getStatus())
-                .isEqualTo(ReservationStatus.CANCELLED);
+        assertThat(cancelled.status())
+                .isEqualTo(ReservationStatus.CANCELLED.toString());
 
         verify(repository).save(reservation);
     }

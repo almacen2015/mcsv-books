@@ -7,7 +7,7 @@ import backend.enums.ReservationStatus;
 import backend.exceptions.reservation.ReservationException;
 import backend.reservationservice.model.entity.Reservation;
 import backend.reservationservice.model.mapper.ReservationMapper;
-import backend.reservationservice.services.impl.ReservationServiceImpl;
+import backend.reservationservice.service.impl.ReservationServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

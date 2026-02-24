@@ -1,4 +1,4 @@
-package backend.reservationservice.services.impl;
+package backend.reservationservice.service.impl;
 
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
