@@ -6,7 +6,10 @@ import lombok.*;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "clients")
+@Table(name = "clients",
+        indexes = {
+                @Index(name = "idx_client_documentnumber", columnList = "documentNumber")
+        })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
