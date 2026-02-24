@@ -31,8 +31,7 @@ public class ReservationController {
             @PathVariable Long id,
             @Valid @RequestBody ConfirmReservationRequest confirmReservationRequest) {
 
-        Reservation confirmed = service.confirm(id, confirmReservationRequest.paymentId());
-        ReservationResponseDto response = mapper.toResponse(confirmed);
+        ReservationResponseDto response = service.confirm(id, confirmReservationRequest.paymentId());
 
         ApiResponseDto<ReservationResponseDto> apiResponse =
                 new ApiResponseDto<>(HttpStatus.OK.value(),

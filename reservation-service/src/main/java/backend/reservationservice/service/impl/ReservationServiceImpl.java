@@ -45,12 +45,12 @@ public class ReservationServiceImpl {
     }
 
     @Transactional
-    public Reservation confirm(Long id, Long paymentId) {
+    public ReservationResponseDto confirm(Long id, Long paymentId) {
         Reservation reservation = repository.findById(id)
                 .orElseThrow(() -> new ReservationException(ReservationException.RESERVATION_NOT_FOUND));
 
         reservation.confirm(paymentId);
-        return reservation;
+        return mapper.toResponse(reservation);
     }
 
     @Transactional
