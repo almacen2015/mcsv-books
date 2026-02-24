@@ -7,11 +7,9 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "clients")
-@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class Client {
 
     @Id
