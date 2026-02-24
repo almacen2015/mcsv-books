@@ -28,7 +28,7 @@ public class ReservationServiceImpl {
     }
 
     @Transactional
-    public Reservation create(Long roomId, Long clientId, LocalDate startDate, LocalDate endDate) {
+    public ReservationResponseDto create(Long roomId, Long clientId, LocalDate startDate, LocalDate endDate) {
         Reservation reservation = new Reservation(roomId, clientId, startDate, endDate);
         boolean conflict = repository.existsOverlappingReservation(reservation.getRoomId(),
                 List.of(ReservationStatus.PAYMENT_PENDING, ReservationStatus.CONFIRMED),
@@ -39,9 +39,9 @@ public class ReservationServiceImpl {
             throw new ReservationException(ReservationException.ROOM_NOT_AVAILABLE);
         }
 
-        repository.save(reservation);
+        Reservation created = repository.save(reservation);
 
-        return reservation;
+        return mapper.toResponse(created);
     }
 
     @Transactional

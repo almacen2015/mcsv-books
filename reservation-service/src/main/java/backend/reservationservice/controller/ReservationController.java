@@ -61,8 +61,7 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ApiResponseDto<ReservationResponseDto>> createReservation(@Valid @RequestBody CreateReservationRequest request) {
-        Reservation reservationCreated = service.create(request.roomId(), request.clientId(), request.startDate(), request.endDate());
-        ReservationResponseDto response = mapper.toResponse(reservationCreated);
+        ReservationResponseDto response = service.create(request.roomId(), request.clientId(), request.startDate(), request.endDate());
         ApiResponseDto<ReservationResponseDto> apiResponseDto = new ApiResponseDto<>(HttpStatus.CREATED.value(), Message.RESERVATION_CREATED, response);
 
         final HttpHeaders headers = createHeader();
