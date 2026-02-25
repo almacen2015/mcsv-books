@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.slf4j.MDC;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,7 +53,8 @@ public class ClientController {
     })
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponseDto<ClientResponseDto>> update(@PathVariable Long id, @RequestBody ClientRequestDto request) {
-        final ApiResponseDto<ClientResponseDto> response = service.update(id, request);
+        final ClientResponseDto data = service.update(id, request);
+        final ApiResponseDto<ClientResponseDto> response = new ApiResponseDto<>(HttpStatus.OK.value(), Message.CLIENT_UPDATE, data);
         final HttpHeaders headers = createHeader();
 
         return new ResponseEntity<>(response, headers, response.code());
@@ -105,7 +105,7 @@ public class ClientController {
     @PostMapping
     public ResponseEntity<ApiResponseDto<ClientResponseDto>> add(@RequestBody ClientRequestDto dto) {
         final ClientResponseDto data = service.add(dto);
-        final ApiResponseDto<ClientResponseDto> response =  new ApiResponseDto<>(HttpStatus.OK.value(), Message.CLIENT_FOUND, data);
+        final ApiResponseDto<ClientResponseDto> response =  new ApiResponseDto<>(HttpStatus.CREATED.value(), Message.CLIENT_FOUND, data);
         final HttpHeaders headers = createHeader();
 
         return new ResponseEntity<>(response, headers, response.code());

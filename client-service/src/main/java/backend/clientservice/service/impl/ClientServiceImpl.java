@@ -55,28 +55,20 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public ApiResponseDto<ClientResponseDto> update(Long id, ClientRequestDto dto) {
+    public ClientResponseDto update(Long id, ClientRequestDto dto) {
         logger.info("update id: {}, client update {}", id, dto);
 
         Utils.isValidId(id);
         Utils.validateClientDto(dto);
         Client clientFound = repository.findById(id).orElseThrow(() -> new ClientException(ClientException.CLIENT_NOT_EXISTS));
 
-        clientFound.setName(dto.name());
-        clientFound.setLastName(dto.lastName());
-        char gender = Objects.equals(dto.gender(), String.valueOf(Gender.MALE.getCode())) ? Gender.MALE.getCode() : Gender.FEMALE.getCode();
-        clientFound.setGender(gender);
-
-        LocalDate date = Utils.toLocalDate(dto.birthDate());
-        clientFound.setBirthDate(date);
-        clientFound.setDocumentNumber(dto.documentNumber());
-        clientFound.setDocumentType(dto.documentType());
+        clientFound.update(dto.name(), dto.lastName(), Utils.toLocalDate(dto.birthDate()), dto.gender(), dto.documentNumber(), dto.documentType());
 
         ClientResponseDto response = mapper.toDto(repository.save(clientFound));
 
         logger.info("update response: {}", response);
 
-        return new ApiResponseDto<>(HttpStatus.OK.value(), Message.CLIENT_UPDATE, response);
+        return response;
     }
 
     @Override
@@ -105,7 +97,7 @@ public class ClientServiceImpl implements ClientService {
         List<ClientResponseDto> data = clients.getContent().stream()
                 .map(mapper::toDto).toList();
 
-        return new PageImpl<>(data, pageable, clients.getTotalElements()));
+        return new PageImpl<>(data, pageable, clients.getTotalElements());
     }
 
     @Override

@@ -1,6 +1,5 @@
 package backend.clientservice.service;
 
-import backend.dtos.apiresponse.ApiResponseDto;
 import backend.dtos.client.requests.ClientRequestDto;
 import backend.dtos.client.responses.ClientResponseDto;
 import org.springframework.data.domain.Page;
@@ -14,5 +13,5 @@ public interface ClientService {
 
     ClientResponseDto getById(Long id);
 
-    ApiResponseDto<ClientResponseDto> update(Long id, ClientRequestDto dto);
+    ClientResponseDto update(Long id, ClientRequestDto dto);
 }
