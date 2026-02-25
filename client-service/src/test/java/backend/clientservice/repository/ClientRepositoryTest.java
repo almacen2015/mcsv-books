@@ -1,6 +1,6 @@
-package backend.clientservice.repositories;
+package backend.clientservice.repository;
 
-import backend.clientservice.models.entities.Client;
+import backend.clientservice.model.entity.Client;
 import backend.enums.DocumentType;
 import backend.enums.Gender;
 import org.junit.jupiter.api.AfterEach;

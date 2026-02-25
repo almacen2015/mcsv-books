@@ -1,4 +1,4 @@
-package backend.clientservice.models.entities;
+package backend.clientservice.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

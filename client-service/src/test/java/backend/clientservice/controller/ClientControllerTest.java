@@ -1,7 +1,7 @@
-package backend.clientservice.controllers;
+package backend.clientservice.controller;
 
 import backend.clientservice.security.TestSecurityConfig;
-import backend.clientservice.services.ClientService;
+import backend.clientservice.service.ClientService;
 import backend.dtos.apiresponse.ApiResponseDto;
 import backend.dtos.client.requests.ClientRequestDto;
 import backend.dtos.client.responses.ClientResponseDto;

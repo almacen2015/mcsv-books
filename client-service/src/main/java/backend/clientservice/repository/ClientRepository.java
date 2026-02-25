@@ -1,6 +1,6 @@
-package backend.clientservice.repositories;
+package backend.clientservice.repository;
 
-import backend.clientservice.models.entities.Client;
+import backend.clientservice.model.entity.Client;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

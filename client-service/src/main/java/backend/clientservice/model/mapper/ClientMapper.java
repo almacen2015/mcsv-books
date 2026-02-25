@@ -1,6 +1,6 @@
-package backend.clientservice.models.mappers;
+package backend.clientservice.model.mapper;
 
-import backend.clientservice.models.entities.Client;
+import backend.clientservice.model.entity.Client;
 import backend.dtos.client.requests.ClientRequestDto;
 import backend.dtos.client.responses.ClientResponseDto;
 import org.mapstruct.Mapper;
