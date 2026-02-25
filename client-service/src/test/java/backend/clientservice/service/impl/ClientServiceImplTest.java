@@ -97,13 +97,13 @@ class ClientServiceImplTest {
         Client clientFound = buildClient(1L, "Maria", "Rosas", LocalDate.of(1994, 7, 22), 30, Gender.FEMALE, "12345678");
         when(repository.findById(any(Long.class))).thenReturn(Optional.of(clientFound));
 
-        ApiResponseDto<ClientResponseDto> apiResponseDto = service.getById(1L);
+        ClientResponseDto apiResponseDto = service.getById(1L);
 
         assertThat(apiResponseDto).isNotNull();
-        assertEquals(1L, apiResponseDto.data().id());
-        assertEquals("Maria", apiResponseDto.data().name());
-        assertEquals(LocalDate.of(1994, 7, 22), apiResponseDto.data().birthDate());
-        assertEquals(Gender.FEMALE.getCode(), apiResponseDto.data().gender());
+        assertEquals(1L, apiResponseDto.id());
+        assertEquals("Maria", apiResponseDto.name());
+        assertEquals(LocalDate.of(1994, 7, 22), apiResponseDto.birthDate());
+        assertEquals(Gender.FEMALE.getCode(), apiResponseDto.gender());
     }
 
     @Test

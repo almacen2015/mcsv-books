@@ -67,7 +67,8 @@ public class ClientController {
     })
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponseDto<ClientResponseDto>> getById(@PathVariable Long id) {
-        final ApiResponseDto<ClientResponseDto> response = service.getById(id);
+        final ClientResponseDto data = service.getById(id);
+        ApiResponseDto<ClientResponseDto> response = new ApiResponseDto<>(HttpStatus.OK.value(), Message.CLIENT_FOUND, data);
         final HttpHeaders headers = createHeader();
         return new ResponseEntity<>(response, headers, response.code());
     }

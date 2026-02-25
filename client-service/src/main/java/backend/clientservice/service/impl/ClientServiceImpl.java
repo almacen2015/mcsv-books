@@ -81,7 +81,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public ApiResponseDto<ClientResponseDto> getById(Long id) {
+    public ClientResponseDto getById(Long id) {
         logger.info("getById Id: {}", id);
 
         Utils.isValidId(id);
@@ -92,7 +92,7 @@ public class ClientServiceImpl implements ClientService {
 
         logger.info("getById response: {}", response);
 
-        return new ApiResponseDto<>(HttpStatus.FOUND.value(), Message.CLIENT_FOUND, response);
+        return response;
     }
 
     @Override

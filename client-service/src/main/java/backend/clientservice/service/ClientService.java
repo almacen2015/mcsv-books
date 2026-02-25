@@ -12,7 +12,7 @@ public interface ClientService {
 
     ApiResponseDto<Page<ClientResponseDto>> list(Integer page, Integer size, String orderBy);
 
-    ApiResponseDto<ClientResponseDto> getById(Long id);
+    ClientResponseDto getById(Long id);
 
     ApiResponseDto<ClientResponseDto> update(Long id, ClientRequestDto dto);
 }
