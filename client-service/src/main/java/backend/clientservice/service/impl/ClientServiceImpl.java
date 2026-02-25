@@ -96,7 +96,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public ApiResponseDto<Page<ClientResponseDto>> list(Integer page, Integer size, String orderBy) {
+    public Page<ClientResponseDto> list(Integer page, Integer size, String orderBy) {
         PageableCustom pageableCustom = new PageableCustom(page, size, orderBy);
         Utils.validatePagination(pageableCustom);
         Pageable pageable = Utils.constructPageable(pageableCustom);
@@ -106,7 +106,7 @@ public class ClientServiceImpl implements ClientService {
         List<ClientResponseDto> data = clients.getContent().stream()
                 .map(mapper::toDto).toList();
 
-        return new ApiResponseDto<>(HttpStatus.OK.value(), Message.OK, new PageImpl<>(data, pageable, clients.getTotalElements()));
+        return new PageImpl<>(data, pageable, clients.getTotalElements()));
     }
 
     @Override

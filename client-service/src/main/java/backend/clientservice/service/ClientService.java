@@ -10,7 +10,7 @@ public interface ClientService {
 
     ApiResponseDto<ClientResponseDto> add(ClientRequestDto dto);
 
-    ApiResponseDto<Page<ClientResponseDto>> list(Integer page, Integer size, String orderBy);
+    Page<ClientResponseDto> list(Integer page, Integer size, String orderBy);
 
     ClientResponseDto getById(Long id);
 

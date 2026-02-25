@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.slf4j.MDC;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -84,7 +85,8 @@ public class ClientController {
     public ResponseEntity<ApiResponseDto<Page<ClientResponseDto>>> list(@RequestParam Integer page,
                                                                         @RequestParam Integer size,
                                                                         @RequestParam String orderBy) {
-        final ApiResponseDto<Page<ClientResponseDto>> response = service.list(page, size, orderBy);
+        final Page<ClientResponseDto> data = service.list(page, size, orderBy);
+        ApiResponseDto<Page<ClientResponseDto>> response = new ApiResponseDto<>(HttpStatus.OK.value(), Message.OK, data);
         final HttpHeaders headers = createHeader();
         return new ResponseEntity<>(response, headers, response.code());
     }

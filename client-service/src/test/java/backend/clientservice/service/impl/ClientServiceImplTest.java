@@ -274,9 +274,9 @@ class ClientServiceImplTest {
         Pageable pageable = PageRequest.of(1, 5);
 
         when(repository.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(List.of(), pageable, 0));
-        ApiResponseDto<Page<ClientResponseDto>> response = service.list(1, 5, "id");
+        Page<ClientResponseDto> response = service.list(1, 5, "id");
 
-        assertThat(response.data().getContent()).isEmpty();
+        assertThat(response.getContent()).isEmpty();
     }
 
     @Test
@@ -288,13 +288,13 @@ class ClientServiceImplTest {
         Pageable pageable = PageRequest.of(1, 5);
 
         when(repository.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(List.of(client1, client2, client3), pageable, 3));
-        ApiResponseDto<Page<ClientResponseDto>> response = service.list(1, 5, "id");
+        Page<ClientResponseDto> response = service.list(1, 5, "id");
 
-        assertThat(response.data().getContent()).isNotNull();
-        assertThat(response.data().getContent().size()).isEqualTo(3);
-        assertThat(response.data().getContent().get(0).id()).isEqualTo(1L);
-        assertThat(response.data().getContent().get(0).name()).isEqualTo("Victor");
-        assertThat(response.data().getContent().get(2).id()).isEqualTo(3L);
+        assertThat(response.getContent()).isNotNull();
+        assertThat(response.getContent().size()).isEqualTo(3);
+        assertThat(response.getContent().get(0).id()).isEqualTo(1L);
+        assertThat(response.getContent().get(0).name()).isEqualTo("Victor");
+        assertThat(response.getContent().get(2).id()).isEqualTo(3L);
 
     }
 
