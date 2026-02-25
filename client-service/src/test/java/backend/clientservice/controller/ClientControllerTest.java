@@ -2,11 +2,9 @@ package backend.clientservice.controller;
 
 import backend.clientservice.security.TestSecurityConfig;
 import backend.clientservice.service.ClientService;
-import backend.dtos.apiresponse.ApiResponseDto;
 import backend.dtos.client.requests.ClientRequestDto;
 import backend.dtos.client.responses.ClientResponseDto;
 import backend.enums.Gender;
-import backend.utils.Message;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,18 +12,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -49,10 +44,9 @@ class ClientControllerTest {
 
     @Test
     void testGetByDocumentNumber_whenDocumentNumberIsValid_returnsClient() throws Exception {
-        ClientResponseDto response = buildResponse(1L, "Susan", "Chapoñan", LocalDate.of(1994, 9, 22), 31, Gender.FEMALE.getCode(), "12345678", "DNI");
-        ApiResponseDto<ClientResponseDto> apiResponseDto = new ApiResponseDto<>(HttpStatus.FOUND.value(), Message.CLIENT_FOUND, response);
+        ClientResponseDto response = buildResponse(1L, "Susan", "Chapoñan", LocalDate.of(1994, 9, 22), Gender.FEMALE.getCode(), "12345678", "DNI");
 
-        when(service.getByDocumentNumber(any(String.class), any(String.class))).thenReturn(apiResponseDto);
+        when(service.getByDocumentNumber(any(String.class), any(String.class))).thenReturn(response);
 
         mockMvc.perform(get("/api/clients/document")
                         .param("documentNumber", "12345678")
@@ -67,10 +61,9 @@ class ClientControllerTest {
 
     @Test
     void testGetById_whenValidId_returnsClient() throws Exception {
-        ClientResponseDto response = buildResponse(1L, "Susan", "Chapoñan", LocalDate.of(1994, 9, 22), 31, Gender.FEMALE.getCode(), "12345678", "DNI");
-        ApiResponseDto<ClientResponseDto> apiResponseDto = new ApiResponseDto<>(HttpStatus.FOUND.value(), Message.CLIENT_FOUND, response);
+        ClientResponseDto response = buildResponse(1L, "Susan", "Chapoñan", LocalDate.of(1994, 9, 22), Gender.FEMALE.getCode(), "12345678", "DNI");
 
-        when(service.getById(any(Long.class))).thenReturn(apiResponseDto);
+        when(service.getById(any(Long.class))).thenReturn(response);
 
         mockMvc.perform(get("/api/clients/{id}", 1L)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -83,13 +76,12 @@ class ClientControllerTest {
 
     @Test
     void testUpdate_whenValidData_returnsClient() throws Exception {
-        ClientResponseDto response = buildResponse(1L, "Susan", "Chapoñan", LocalDate.of(1994, 9, 22), 31, 'F', "12345678", "DNI");
+        ClientResponseDto response = buildResponse(1L, "Susan", "Chapoñan", LocalDate.of(1994, 9, 22), 'F', "12345678", "DNI");
         ClientRequestDto dto = buildRequest("Susan", "Chapoñan", "1994-07-22", "F", "12345678", "DNI");
 
-        ApiResponseDto<ClientResponseDto> apiResponseDto = new ApiResponseDto<>(HttpStatus.CREATED.value(), Message.CLIENT_UPDATE, response);
         String json = objectMapper.writeValueAsString(dto);
 
-        when(service.update(any(Long.class), any(ClientRequestDto.class))).thenReturn(apiResponseDto);
+        when(service.update(any(Long.class), any(ClientRequestDto.class))).thenReturn(response);
 
         mockMvc.perform(put("/api/clients/{id}", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -105,16 +97,14 @@ class ClientControllerTest {
 
     @Test
     void testList_WhenPageDataIsValid_ReturnsClients() throws Exception {
-        ClientResponseDto client1 = buildResponse(1L, "Victor", "Orbegozo", LocalDate.of(1994, 4, 5), 30, 'M', "11111111", "DNI");
-        ClientResponseDto client2 = buildResponse(2L, "Mario", "Mesa", LocalDate.of(1994, 4, 5), 20, 'M', "22222222", "DNI");
-        ClientResponseDto client3 = buildResponse(3L, "Susan", "Bonita", LocalDate.of(1994, 4, 5), 29, 'F', "33333333", "DNI");
+        ClientResponseDto client1 = buildResponse(1L, "Victor", "Orbegozo", LocalDate.of(1994, 4, 5), 'M', "11111111", "DNI");
+        ClientResponseDto client2 = buildResponse(2L, "Mario", "Mesa", LocalDate.of(1994, 4, 5), 'M', "22222222", "DNI");
+        ClientResponseDto client3 = buildResponse(3L, "Susan", "Bonita", LocalDate.of(1994, 4, 5), 'F', "33333333", "DNI");
         List<ClientResponseDto> clients = List.of(client1, client2, client3);
 
         Pageable pageable = PageRequest.of(1, 5);
 
-        ApiResponseDto<Page<ClientResponseDto>> response = new ApiResponseDto<>(HttpStatus.OK.value(), Message.OK, new PageImpl<>(clients, pageable, clients.size()));
-
-        when(service.list(any(Integer.class), any(Integer.class), any(String.class))).thenReturn(response);
+        when(service.list(any(Integer.class), any(Integer.class), any(String.class))).thenReturn(new PageImpl<>(clients, pageable, clients.size()));
 
         mockMvc.perform(get("/api/clients")
                         .param("page", "1")
@@ -131,15 +121,13 @@ class ClientControllerTest {
 
     @Test
     void testAdd_WhenDataValid_ReturnClient() throws Exception {
-        String traceId = UUID.randomUUID().toString();
 
         ClientRequestDto request = buildRequest("Victor", "Orbegozo", "1994-04-05", "M", "12345678", "DNI");
-        ClientResponseDto response = buildResponse(1L, "Victor", "Orbegozo", LocalDate.of(1994, 4, 5), 30, 'M', "12345678", "DNI");
-        ApiResponseDto<ClientResponseDto> apiResponseDto = new ApiResponseDto<>(HttpStatus.CREATED.value(), "Cliente created", response);
+        ClientResponseDto response = buildResponse(1L, "Victor", "Orbegozo", LocalDate.of(1994, 4, 5), 'M', "12345678", "DNI");
 
         String json = objectMapper.writeValueAsString(request);
 
-        when(service.add(any(ClientRequestDto.class))).thenReturn(apiResponseDto);
+        when(service.add(any(ClientRequestDto.class))).thenReturn(response);
 
         mockMvc.perform(post("/api/clients")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -157,7 +145,7 @@ class ClientControllerTest {
         return new ClientRequestDto(name, lastName, birthDate, gender, documentNumber, documentType);
     }
 
-    private ClientResponseDto buildResponse(Long id, String name, String lastName, LocalDate birthDate, int age, char gender, String documentNumber, String documentType) {
-        return new ClientResponseDto(id, name, lastName, birthDate, age, gender, documentNumber, documentType);
+    private ClientResponseDto buildResponse(Long id, String name, String lastName, LocalDate birthDate, char gender, String documentNumber, String documentType) {
+        return new ClientResponseDto(id, name, lastName, birthDate, gender, documentNumber, documentType);
     }
 }
