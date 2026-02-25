@@ -37,7 +37,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public ApiResponseDto<ClientResponseDto> getByDocumentNumber(String documentNumber, String documentType) {
+    public ClientResponseDto getByDocumentNumber(String documentNumber, String documentType) {
         logger.info("getByDocumentNumber documentNumber: {} , documentType: {}", documentNumber, documentType);
 
         if (Utils.isInvalidString(documentNumber)) {
@@ -49,11 +49,9 @@ public class ClientServiceImpl implements ClientService {
 
         ClientResponseDto clientResponseDto = mapper.toDto(clientFound);
 
-        ApiResponseDto<ClientResponseDto> response = new ApiResponseDto<>(HttpStatus.FOUND.value(), Message.CLIENT_FOUND, clientResponseDto);
+        logger.info("getByDocumentNumber response: {}", clientResponseDto);
 
-        logger.info("getByDocumentNumber response: {}", response);
-
-        return response;
+        return clientResponseDto;
     }
 
     @Override

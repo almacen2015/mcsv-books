@@ -4,6 +4,7 @@ import backend.clientservice.service.ClientService;
 import backend.dtos.apiresponse.ApiResponseDto;
 import backend.dtos.client.requests.ClientRequestDto;
 import backend.dtos.client.responses.ClientResponseDto;
+import backend.utils.Message;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -11,6 +12,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.slf4j.MDC;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,7 +37,8 @@ public class ClientController {
     @GetMapping("/document")
     public ResponseEntity<ApiResponseDto<ClientResponseDto>> getByDocumentNumber(@RequestParam String documentNumber,
                                                                                  @RequestParam String documentType) {
-        final ApiResponseDto<ClientResponseDto> response = service.getByDocumentNumber(documentNumber, documentType);
+        final ClientResponseDto data = service.getByDocumentNumber(documentNumber, documentType);
+        ApiResponseDto<ClientResponseDto> response = new ApiResponseDto<>(HttpStatus.OK.value(), Message.CLIENT_FOUND, data);
         final HttpHeaders headers = createHeader();
         return new ResponseEntity<>(response, headers, response.code());
     }
