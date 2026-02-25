@@ -8,7 +8,7 @@ import org.springframework.data.domain.Page;
 public interface ClientService {
     ClientResponseDto getByDocumentNumber(String documentNumber, String documentType);
 
-    ApiResponseDto<ClientResponseDto> add(ClientRequestDto dto);
+    ClientResponseDto add(ClientRequestDto dto);
 
     Page<ClientResponseDto> list(Integer page, Integer size, String orderBy);
 

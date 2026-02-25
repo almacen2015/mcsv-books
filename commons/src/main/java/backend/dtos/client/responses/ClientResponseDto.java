@@ -6,7 +6,6 @@ public record ClientResponseDto(Long id,
                                 String name,
                                 String lastName,
                                 LocalDate birthDate,
-                                Integer age,
                                 char gender,
                                 String documentNumber,
                                 String documentType) {

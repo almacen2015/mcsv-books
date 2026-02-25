@@ -69,7 +69,6 @@ public class ClientServiceImpl implements ClientService {
 
         LocalDate date = Utils.toLocalDate(dto.birthDate());
         clientFound.setBirthDate(date);
-        clientFound.setAge(Utils.getAge(date));
         clientFound.setDocumentNumber(dto.documentNumber());
         clientFound.setDocumentType(dto.documentType());
 
@@ -111,17 +110,16 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     @Transactional(rollbackOn = Exception.class)
-    public ApiResponseDto<ClientResponseDto> add(ClientRequestDto dto) {
+    public ClientResponseDto add(ClientRequestDto dto) {
         logger.info("Add data client: {}", dto.toString());
 
         Utils.validateClientDto(dto);
 
         Client client = mapper.toEntity(dto);
-        client.setAge(Utils.getAge(client.getBirthDate()));
 
         ClientResponseDto response = mapper.toDto(repository.save(client));
 
         logger.info("Add response: {}", response);
-        return new ApiResponseDto<>(HttpStatus.CREATED.value(), Message.CLIENT_CREATED, response);
+        return response;
     }
 }

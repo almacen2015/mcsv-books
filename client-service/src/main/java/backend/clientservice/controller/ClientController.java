@@ -39,8 +39,9 @@ public class ClientController {
     public ResponseEntity<ApiResponseDto<ClientResponseDto>> getByDocumentNumber(@RequestParam String documentNumber,
                                                                                  @RequestParam String documentType) {
         final ClientResponseDto data = service.getByDocumentNumber(documentNumber, documentType);
-        ApiResponseDto<ClientResponseDto> response = new ApiResponseDto<>(HttpStatus.OK.value(), Message.CLIENT_FOUND, data);
+        final ApiResponseDto<ClientResponseDto> response = new ApiResponseDto<>(HttpStatus.OK.value(), Message.CLIENT_FOUND, data);
         final HttpHeaders headers = createHeader();
+
         return new ResponseEntity<>(response, headers, response.code());
     }
 
@@ -55,6 +56,7 @@ public class ClientController {
     public ResponseEntity<ApiResponseDto<ClientResponseDto>> update(@PathVariable Long id, @RequestBody ClientRequestDto request) {
         final ApiResponseDto<ClientResponseDto> response = service.update(id, request);
         final HttpHeaders headers = createHeader();
+
         return new ResponseEntity<>(response, headers, response.code());
     }
 
@@ -69,8 +71,9 @@ public class ClientController {
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponseDto<ClientResponseDto>> getById(@PathVariable Long id) {
         final ClientResponseDto data = service.getById(id);
-        ApiResponseDto<ClientResponseDto> response = new ApiResponseDto<>(HttpStatus.OK.value(), Message.CLIENT_FOUND, data);
+        final ApiResponseDto<ClientResponseDto> response = new ApiResponseDto<>(HttpStatus.OK.value(), Message.CLIENT_FOUND, data);
         final HttpHeaders headers = createHeader();
+
         return new ResponseEntity<>(response, headers, response.code());
     }
 
@@ -86,8 +89,9 @@ public class ClientController {
                                                                         @RequestParam Integer size,
                                                                         @RequestParam String orderBy) {
         final Page<ClientResponseDto> data = service.list(page, size, orderBy);
-        ApiResponseDto<Page<ClientResponseDto>> response = new ApiResponseDto<>(HttpStatus.OK.value(), Message.OK, data);
+        final ApiResponseDto<Page<ClientResponseDto>> response = new ApiResponseDto<>(HttpStatus.OK.value(), Message.OK, data);
         final HttpHeaders headers = createHeader();
+
         return new ResponseEntity<>(response, headers, response.code());
     }
 
@@ -100,8 +104,10 @@ public class ClientController {
     })
     @PostMapping
     public ResponseEntity<ApiResponseDto<ClientResponseDto>> add(@RequestBody ClientRequestDto dto) {
-        final ApiResponseDto<ClientResponseDto> response = service.add(dto);
+        final ClientResponseDto data = service.add(dto);
+        final ApiResponseDto<ClientResponseDto> response =  new ApiResponseDto<>(HttpStatus.OK.value(), Message.CLIENT_FOUND, data);
         final HttpHeaders headers = createHeader();
+
         return new ResponseEntity<>(response, headers, response.code());
     }
 

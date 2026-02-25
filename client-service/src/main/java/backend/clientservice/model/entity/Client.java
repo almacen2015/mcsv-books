@@ -27,9 +27,6 @@ public class Client {
     private LocalDate birthDate;
 
     @Column(nullable = false)
-    private Integer age;
-
-    @Column(nullable = false)
     private char gender;
 
     @Column(nullable = false, unique = true)
