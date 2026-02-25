@@ -81,19 +81,21 @@ class ReservationControllerTest {
         Long reservationId = 1L;
         Long paymentId = 10L;
 
-        Reservation reservation = new Reservation(
+        ReservationResponseDto response = new ReservationResponseDto(
+                1L,
                 1L,
                 1L,
                 LocalDate.now().plusDays(1),
-                LocalDate.now().plusDays(3)
+                LocalDate.now().plusDays(3),
+                ReservationStatus.CONFIRMED.name(),
+                1L,
+                LocalDateTime.now()
         );
 
         ConfirmReservationRequest confirmReservationRequest = new ConfirmReservationRequest(paymentId);
 
-        reservation.confirm(paymentId);
-
         when(service.confirm(reservationId, paymentId))
-                .thenReturn(reservation);
+                .thenReturn(response);
 
         mockMvc.perform(patch("/api/reservations/{id}/confirm", reservationId)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -110,16 +112,18 @@ class ReservationControllerTest {
 
         Long id = 1L;
 
-        Reservation reservation = new Reservation(
+        ReservationResponseDto response = new ReservationResponseDto(
+                1L,
                 1L,
                 1L,
                 LocalDate.now().plusDays(1),
-                LocalDate.now().plusDays(3)
+                LocalDate.now().plusDays(3),
+                ReservationStatus.CANCELLED.name(),
+                null,
+                LocalDateTime.now()
         );
 
-        reservation.cancel();
-
-        when(service.cancel(id)).thenReturn(reservation);
+        when(service.cancel(id)).thenReturn(response);
 
         mockMvc.perform(patch("/api/reservations/{id}/cancel", id))
                 .andExpect(status().isOk())
@@ -216,25 +220,30 @@ class ReservationControllerTest {
                 LocalDate.now().plusDays(3)
         );
 
-        Reservation reservation = new Reservation(
+        ReservationResponseDto response = new ReservationResponseDto(
                 1L,
-                10L,
-                request.startDate(),
-                request.endDate());
+                1L,
+                1L,
+                LocalDate.now().plusDays(1),
+                LocalDate.now().plusDays(3),
+                ReservationStatus.PAYMENT_PENDING.name(),
+                null,
+                LocalDateTime.now()
+        );
 
         when(service.create(request.roomId(),
                 request.clientId(),
                 request.startDate(),
                 request.endDate()))
-                .thenReturn(reservation);
+                .thenReturn(response);
 
         mockMvc.perform(post("/api/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.data.roomId").value(1))
-                .andExpect(jsonPath("$.data.clientId").value(10))
-                .andExpect(jsonPath("$.data.status").value("PAYMENT_PENDING"));
+                .andExpect(jsonPath("$.data.clientId").value(1))
+                .andExpect(jsonPath("$.data.status").value(ReservationStatus.PAYMENT_PENDING.name()));
 
     }
 

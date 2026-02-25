@@ -165,12 +165,12 @@ class ReservationServiceImplTest {
 
         when(repository.findById(id)).thenReturn(Optional.of(reservation));
 
-        Reservation confirmed = service.confirm(id, paymentId);
+        ReservationResponseDto confirmed = service.confirm(id, paymentId);
 
-        assertThat(confirmed.getStatus())
-                .isEqualTo(ReservationStatus.CONFIRMED);
+        assertThat(confirmed.status())
+                .isEqualTo(ReservationStatus.CONFIRMED.toString());
 
-        assertThat(confirmed.getPaymentId())
+        assertThat(confirmed.paymentId())
                 .isEqualTo(paymentId);
     }
 
@@ -283,13 +283,19 @@ class ReservationServiceImplTest {
                 startDate,
                 endDate);
 
-        when(repository.existsOverlappingReservation(reservation.getRoomId(), List.of(ReservationStatus.PAYMENT_PENDING, ReservationStatus.CONFIRMED), reservation.getStartDate(), reservation.getEndDate())).thenReturn(false);
+        when(repository.existsOverlappingReservation(reservation.getRoomId(), List.of(ReservationStatus.PAYMENT_PENDING, ReservationStatus.CONFIRMED), reservation.getStartDate(), reservation.getEndDate()))
+                .thenReturn(false);
+        when(repository.save(any(Reservation.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
-        Reservation reservationCreated = service.create(roomId, clientId, startDate, endDate);
+        ReservationResponseDto created = service.create(roomId, clientId, startDate, endDate);
 
-        assertThat(reservationCreated).isNotNull();
+        assertThat(created).isNotNull();
+        assertThat(created.roomId()).isEqualTo(roomId);
+        assertThat(created.clientId()).isEqualTo(clientId);
+        assertThat(created.status()).isEqualTo(ReservationStatus.PAYMENT_PENDING.name());
 
-        verify(repository).save(reservationCreated);
+        verify(repository).save(any(Reservation.class));
     }
 
     @Test
