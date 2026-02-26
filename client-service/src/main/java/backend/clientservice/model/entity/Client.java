@@ -54,7 +54,7 @@ public class Client {
         this.name = name;
         this.lastName = lastName;
         this.birthDate = birthDate;
-        this.gender = gender == Gender.MALE.getCode() ? Gender.MALE.getCode() : Gender.FEMALE.getCode();
+        this.gender = gender.charAt(0) == Gender.MALE.getCode() ? Gender.MALE.getCode() : Gender.FEMALE.getCode();
         this.documentNumber = documentNumber;
         this.documentType = documentType;
     }

@@ -2,7 +2,6 @@ package backend.clientservice.service.impl;
 
 import backend.clientservice.model.entity.Client;
 import backend.clientservice.repository.ClientRepository;
-import backend.dtos.apiresponse.ApiResponseDto;
 import backend.dtos.client.requests.ClientRequestDto;
 import backend.dtos.client.responses.ClientResponseDto;
 import backend.enums.DocumentType;
@@ -113,13 +112,13 @@ class ClientServiceImplTest {
 
         when(repository.findById(any())).thenReturn(Optional.of(clientFound));
         when(repository.save(any(Client.class))).thenReturn(clientFound);
-        ApiResponseDto<ClientResponseDto> response = service.update(1L, request);
+        ClientResponseDto response = service.update(1L, request);
 
-        assertThat(response.data()).isNotNull();
-        assertEquals(request.name(), response.data().name());
-        assertEquals(request.lastName(), response.data().lastName());
-        assertEquals('M', response.data().gender());
-        assertEquals(Utils.toLocalDate(request.birthDate()), response.data().birthDate());
+        assertThat(response).isNotNull();
+        assertEquals(request.name(), response.name());
+        assertEquals(request.lastName(), response.lastName());
+        assertEquals('M', response.gender());
+        assertEquals(Utils.toLocalDate(request.birthDate()), response.birthDate());
     }
 
     @Test
@@ -394,11 +393,11 @@ class ClientServiceImplTest {
 
         when(repository.save(any(Client.class))).thenReturn(client);
 
-        ApiResponseDto<ClientResponseDto> response = service.add(request);
+        ClientResponseDto response = service.add(request);
 
-        assertNotNull(response.data());
-        assertEquals(1L, response.data().id());
-        assertEquals("Victor", response.data().name());
+        assertNotNull(response);
+        assertEquals(client.getId(), response.id());
+        assertEquals(client.getName(), response.name());
     }
 
     private ClientRequestDto buildClientRequest(String name, String lastName, String birthDate, String gender, String documentNumber, String documentType) {
@@ -411,7 +410,6 @@ class ClientServiceImplTest {
                 .name(name)
                 .lastName(lastName)
                 .birthDate(birthDate)
-                .age(age)
                 .gender(gender.getCode())
                 .documentNumber(documentNumber)
                 .documentType(DocumentType.DNI.name())

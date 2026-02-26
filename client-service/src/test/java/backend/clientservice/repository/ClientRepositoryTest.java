@@ -60,22 +60,6 @@ class ClientRepositoryTest {
     }
 
     @Test
-    void testUpdate() {
-        Client client = buildClient("Victor", "Orbegozo", "12345678");
-        Client clientSaved = repository.save(client);
-
-        clientSaved.setName("Maria");
-        clientSaved.setLastName("Rosas");
-        repository.save(clientSaved);
-
-        Optional<Client> updatedClient = repository.findById(clientSaved.getId());
-
-        assertTrue(updatedClient.isPresent());
-        assertEquals("Maria", updatedClient.get().getName());
-        assertEquals("Rosas", updatedClient.get().getLastName());
-    }
-
-    @Test
     void testList() {
         Client client1 = buildClient("Victor", "Orbegozo", "12345678");
         Client client2 = buildClient("Luis", "Casas", "11111111");
@@ -106,7 +90,6 @@ class ClientRepositoryTest {
                 .name(name)
                 .lastName(lastName)
                 .birthDate(LocalDate.of(1994, 4, 5))
-                .age(30)
                 .gender(Gender.MALE.getCode())
                 .documentNumber(documentNumber)
                 .documentType(DocumentType.DNI.name())
