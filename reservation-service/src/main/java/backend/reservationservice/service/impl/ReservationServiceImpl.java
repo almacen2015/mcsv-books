@@ -6,6 +6,7 @@ import backend.exceptions.reservation.ReservationException;
 import backend.reservationservice.model.entity.Reservation;
 import backend.reservationservice.model.mapper.ReservationMapper;
 import backend.reservationservice.repository.ReservationRepository;
+import backend.reservationservice.service.validator.ClientValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,10 +17,12 @@ import java.util.List;
 @Service
 public class ReservationServiceImpl {
     private final ReservationRepository repository;
+    private final ClientValidator clientValidator;
     private final ReservationMapper mapper = ReservationMapper.INSTANCE;
 
-    public ReservationServiceImpl(ReservationRepository reservationRepository) {
+    public ReservationServiceImpl(ReservationRepository reservationRepository, ClientValidator clientValidator) {
         this.repository = reservationRepository;
+        this.clientValidator = clientValidator;
     }
 
     public Reservation getById(Long id) {
@@ -29,6 +32,7 @@ public class ReservationServiceImpl {
 
     @Transactional
     public ReservationResponseDto create(Long roomId, Long clientId, LocalDate startDate, LocalDate endDate) {
+        clientValidator.validateClientExists(clientId);
         Reservation reservation = new Reservation(roomId, clientId, startDate, endDate);
         boolean conflict = repository.existsOverlappingReservation(reservation.getRoomId(),
                 List.of(ReservationStatus.PAYMENT_PENDING, ReservationStatus.CONFIRMED),
