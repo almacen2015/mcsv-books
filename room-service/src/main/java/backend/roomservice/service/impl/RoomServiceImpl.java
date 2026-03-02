@@ -27,4 +27,13 @@ public class RoomServiceImpl implements RoomService {
         Room roomEntity = mapper.toEntity(dto);
         return mapper.toDto(roomRepository.save(roomEntity));
     }
+
+    @Override
+    public RoomResponseDto getById(Long id) {
+        Utils.isValidId(id);
+        Room roomEntity = roomRepository.findById(id)
+                .orElseThrow(() -> new RoomException(RoomException.ROOM_NOT_FOUND));
+
+        return mapper.toDto(roomEntity);
+    }
 }

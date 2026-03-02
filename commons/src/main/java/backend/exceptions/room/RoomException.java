@@ -7,6 +7,7 @@ public class RoomException extends RuntimeException {
     public static final String ERROR_CAPACITY = "The capacity is invalid";
     public static final String ERROR_STATUS = "The room status is invalid";
     public static final String ERROR_TYPE = "The room type is invalid";
+    public static final String ROOM_NOT_FOUND = "Room not found";
 
     public RoomException(String message) {
         super(message);

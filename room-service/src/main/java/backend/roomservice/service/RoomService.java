@@ -5,4 +5,6 @@ import backend.dtos.room.response.RoomResponseDto;
 
 public interface RoomService {
     RoomResponseDto add(RoomRequestDto dto);
+
+    RoomResponseDto getById(Long id);
 }
