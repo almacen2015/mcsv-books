@@ -4,12 +4,14 @@ import backend.dtos.apiresponse.ApiResponseDto;
 import backend.dtos.room.request.RoomRequestDto;
 import backend.dtos.room.response.RoomResponseDto;
 import backend.roomservice.service.RoomService;
+import backend.utils.Message;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,7 +38,8 @@ public class RoomController {
     })
     @PostMapping
     public ResponseEntity<ApiResponseDto<RoomResponseDto>> addRoom(@RequestBody RoomRequestDto dto) {
-        final ApiResponseDto<RoomResponseDto> response = service.add(dto);
+        final RoomResponseDto data = service.add(dto);
+        final ApiResponseDto<RoomResponseDto> response = new ApiResponseDto<>(HttpStatus.CREATED.value(), Message.ROOM_CREATED, data);
         final HttpHeaders headers = createHeader();
         return new ResponseEntity<>(response, headers, response.code());
     }
