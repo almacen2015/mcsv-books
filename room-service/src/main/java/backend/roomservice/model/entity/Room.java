@@ -9,9 +9,8 @@ import lombok.*;
 @Table(name = "rooms")
 @Builder
 @Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor(access =  AccessLevel.PROTECTED)
+@AllArgsConstructor(access =  AccessLevel.PRIVATE)
 public class Room {
 
     @Id
