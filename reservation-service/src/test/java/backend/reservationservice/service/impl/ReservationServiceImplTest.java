@@ -5,6 +5,7 @@ import backend.enums.ReservationStatus;
 import backend.exceptions.reservation.ReservationException;
 import backend.reservationservice.model.entity.Reservation;
 import backend.reservationservice.repository.ReservationRepository;
+import backend.reservationservice.service.validator.ClientValidator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,8 +28,61 @@ class ReservationServiceImplTest {
     @Mock
     private ReservationRepository repository;
 
+    @Mock
+    private ClientValidator clientValidator;
+
     @InjectMocks
     private ReservationServiceImpl service;
+
+    @Test
+    void create_shouldThrowException_WhenClientDoesNotExist() {
+
+        Long roomId = 1L;
+        Long clientId = 99L;
+        LocalDate startDate = LocalDate.now().plusDays(1);
+        LocalDate endDate = LocalDate.now().plusDays(3);
+
+        doThrow(new ReservationException("Client not found"))
+                .when(clientValidator)
+                .validateClientExists(clientId);
+
+        assertThatThrownBy(() ->
+                service.create(roomId, clientId, startDate, endDate)
+        ).isInstanceOf(ReservationException.class);
+
+        verify(repository, never())
+                .save(any());
+    }
+
+    @Test
+    void create_shouldCreateReservation_WhenClientExistsAndRoomAvailable() {
+        Long roomId = 1L;
+        Long clientId = 1L;
+        LocalDate startDate = LocalDate.now().plusDays(1);
+        LocalDate endDate = LocalDate.now().plusDays(3);
+
+        doNothing().when(clientValidator)
+                .validateClientExists(clientId);
+
+        when(repository.existsOverlappingReservation(
+                eq(roomId),
+                anyList(),
+                eq(startDate),
+                eq(endDate)
+        )).thenReturn(false);
+
+        when(repository.save(any(Reservation.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        ReservationResponseDto result =
+                service.create(roomId, clientId, startDate, endDate);
+
+        assertThat(result).isNotNull();
+
+        verify(clientValidator).validateClientExists(clientId);
+
+        verify(repository).save(any(Reservation.class));
+    }
 
     @Test
     void expirePendingReservations_WhenReservationIsAlreadyConfirmed_ShouldThrowException() {
