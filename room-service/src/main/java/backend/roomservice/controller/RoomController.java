@@ -1,9 +1,9 @@
-package backend.roomservice.controllers;
+package backend.roomservice.controller;
 
 import backend.dtos.apiresponse.ApiResponseDto;
 import backend.dtos.room.request.RoomRequestDto;
 import backend.dtos.room.response.RoomResponseDto;
-import backend.roomservice.services.RoomService;
+import backend.roomservice.service.RoomService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

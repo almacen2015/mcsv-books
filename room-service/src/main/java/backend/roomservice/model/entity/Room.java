@@ -1,4 +1,4 @@
-package backend.roomservice.models.entities;
+package backend.roomservice.model.entity;
 
 import backend.enums.RoomStatus;
 import backend.enums.RoomType;

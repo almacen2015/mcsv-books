@@ -1,6 +1,6 @@
-package backend.roomservice.repositories;
+package backend.roomservice.repository;
 
-import backend.roomservice.models.entities.Room;
+import backend.roomservice.model.entity.Room;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RoomRepository extends JpaRepository<Room, Long> {

@@ -1,8 +1,8 @@
-package backend.roomservice.models.mappers;
+package backend.roomservice.model.mapper;
 
 import backend.dtos.room.request.RoomRequestDto;
 import backend.dtos.room.response.RoomResponseDto;
-import backend.roomservice.models.entities.Room;
+import backend.roomservice.model.entity.Room;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;

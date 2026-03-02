@@ -1,13 +1,13 @@
-package backend.roomservice.services.impl;
+package backend.roomservice.service.impl;
 
 import backend.dtos.apiresponse.ApiResponseDto;
 import backend.dtos.room.request.RoomRequestDto;
 import backend.dtos.room.response.RoomResponseDto;
 import backend.exceptions.room.RoomException;
-import backend.roomservice.models.entities.Room;
-import backend.roomservice.models.mappers.RoomMapper;
-import backend.roomservice.repositories.RoomRepository;
-import backend.roomservice.services.RoomService;
+import backend.roomservice.model.entity.Room;
+import backend.roomservice.model.mapper.RoomMapper;
+import backend.roomservice.repository.RoomRepository;
+import backend.roomservice.service.RoomService;
 import backend.utils.Message;
 import backend.utils.Utils;
 import org.springframework.http.HttpStatus;

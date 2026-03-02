@@ -1,4 +1,4 @@
-package backend.roomservice.services;
+package backend.roomservice.service;
 
 import backend.dtos.apiresponse.ApiResponseDto;
 import backend.dtos.room.request.RoomRequestDto;
