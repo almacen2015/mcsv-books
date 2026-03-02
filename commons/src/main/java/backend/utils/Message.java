@@ -8,6 +8,7 @@ public class Message {
     public static final String CLIENT_UPDATE = "Client updated";
 
     public static final String ROOM_CREATED = "Room created";
+    public static final String ROOM_FOUND = "Room found";
 
     public static final String RESERVATION_CREATED = "Reservation created";
     public static final String RESERVATION_FOUND = "Reservation found";

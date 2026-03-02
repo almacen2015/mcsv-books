@@ -13,10 +13,7 @@ import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/rooms")
@@ -40,6 +37,21 @@ public class RoomController {
     public ResponseEntity<ApiResponseDto<RoomResponseDto>> addRoom(@RequestBody RoomRequestDto dto) {
         final RoomResponseDto data = service.add(dto);
         final ApiResponseDto<RoomResponseDto> response = new ApiResponseDto<>(HttpStatus.CREATED.value(), Message.ROOM_CREATED, data);
+        final HttpHeaders headers = createHeader();
+        return new ResponseEntity<>(response, headers, response.code());
+    }
+
+    @Operation(summary = "Get by id", description = "Get by id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Client saved"),
+            @ApiResponse(responseCode = "400", description = "Invalid data"),
+            @ApiResponse(responseCode = "401", description = "No authorized"),
+            @ApiResponse(responseCode = "500", description = "Internal Error")
+    })
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponseDto<RoomResponseDto>> GETbYiD(@PathVariable Long id) {
+        final RoomResponseDto data = service.getById(id);
+        final ApiResponseDto<RoomResponseDto> response = new ApiResponseDto<>(HttpStatus.OK.value(), Message.ROOM_FOUND, data);
         final HttpHeaders headers = createHeader();
         return new ResponseEntity<>(response, headers, response.code());
     }

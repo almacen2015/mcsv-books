@@ -105,7 +105,7 @@ public class ClientController {
     @PostMapping
     public ResponseEntity<ApiResponseDto<ClientResponseDto>> add(@RequestBody ClientRequestDto dto) {
         final ClientResponseDto data = service.add(dto);
-        final ApiResponseDto<ClientResponseDto> response =  new ApiResponseDto<>(HttpStatus.CREATED.value(), Message.CLIENT_FOUND, data);
+        final ApiResponseDto<ClientResponseDto> response =  new ApiResponseDto<>(HttpStatus.CREATED.value(), Message.CLIENT_CREATED, data);
         final HttpHeaders headers = createHeader();
 
         return new ResponseEntity<>(response, headers, response.code());
